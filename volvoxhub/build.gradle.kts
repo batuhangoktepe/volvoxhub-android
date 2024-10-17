@@ -122,14 +122,15 @@ kapt {
     correctErrorTypes = true
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
+publishing {
+    publications {
+        create("release", MavenPublication::class) {
+            groupId = "com.github.batuhangoktepe"
+            artifactId = "volvoxhub-android"
+            version = "1.0.0"
+
+            afterEvaluate {
                 from(components["release"])
-                groupId = "com.github.batuhangoktepe"
-                artifactId = "volvoxhub-android"
-                version = "1.0.0"
             }
         }
     }

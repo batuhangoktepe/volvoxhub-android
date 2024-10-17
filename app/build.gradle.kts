@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kapt)
     id("dagger.hilt.android.plugin")
+    id("maven-publish")
 }
 
 android {
