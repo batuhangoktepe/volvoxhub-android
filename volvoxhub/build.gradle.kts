@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kapt)
     alias(libs.plugins.google.services)
+    id("maven-publish")
 }
 
 android {
@@ -116,4 +117,15 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            groupId = "com.github.batuhangoktepe"
+            artifactId = "volvoxhub-android"
+            version = "0.1.0"
+        }
+    }
 }
