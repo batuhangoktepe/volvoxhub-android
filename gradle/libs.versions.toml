@@ -33,6 +33,7 @@ fuel = "2.3.1"
 amplitude = "1.+"
 firebaseBom = "33.4.0"
 googleServices = "4.4.2"
+mavenPublish = "0.28.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -90,5 +91,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
-mavenPublish = { id = "maven-publish" }
-
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }

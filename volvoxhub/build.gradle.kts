@@ -121,8 +121,8 @@ kapt {
 afterEvaluate {
     publishing {
         publications {
-            create<MavenPublication>("maven") {
-                from (components["release"])
+            create<MavenPublication>("release") {
+                from(components["release"])
                 groupId = "com.github.batuhangoktepe"
                 artifactId = "volvoxhub-android"
                 version = "0.1.0"

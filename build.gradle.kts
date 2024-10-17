@@ -23,8 +23,5 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.kapt) apply false
     alias(libs.plugins.google.services) apply false
-    `maven-publish`
+    alias(libs.plugins.mavenPublish) apply false
 }
-
-group = "com.github.batuhangoktepe"
-version = "0.1.0"
