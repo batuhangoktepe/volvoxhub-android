@@ -125,7 +125,7 @@ afterEvaluate {
                 from (components["release"])
                 groupId = "com.github.batuhangoktepe"
                 artifactId = "volvoxhub-android"
-                version = "0.2.0"
+                version = "0.1.0"
             }
         }
     }
