@@ -43,6 +43,10 @@ android {
         jvmTarget = "1.8"
     }
 
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
 }
 
 dependencies {

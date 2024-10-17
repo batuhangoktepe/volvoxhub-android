@@ -10,7 +10,6 @@ buildscript {
     dependencies {
         classpath(libs.hilt.android.gradle.plugin)
         classpath(libs.gradle)
-        classpath(libs.google.services)
     }
 
 }
