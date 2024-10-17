@@ -124,14 +124,36 @@ kapt {
 
 publishing {
     publications {
-        create("release", MavenPublication::class) {
+        create<MavenPublication>("release") {
+            from(components["release"])
+
+            artifact(tasks.named("sourcesJar"))
+            artifact(tasks.named("javadocJar"))
+
             groupId = "com.github.batuhangoktepe"
             artifactId = "volvoxhub-android"
             version = "1.0.0"
+        }
+    }
 
-            afterEvaluate {
-                from(components["release"])
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/username/repository")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
             }
         }
     }
+}
+
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
+}
+
+tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    from(tasks.named("javadoc"))
 }
