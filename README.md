@@ -51,11 +51,10 @@ VolvoxHub.getInstance().startAuthorization(object : VolvoxHubInitListener {
 })
 ```
 
-# License
-
-This project is licensed under the MIT License.
-
 # Contact
 
 For inquiries about joining the hub system or for more information, please contact batuhan@volvoxmobile.com.
 
+# License
+
+This project is licensed under the MIT License.
