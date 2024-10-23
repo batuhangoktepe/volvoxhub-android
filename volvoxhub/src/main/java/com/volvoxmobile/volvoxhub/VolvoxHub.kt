@@ -1,18 +1,22 @@
 package com.volvoxmobile.volvoxhub
 
 import android.app.Activity
+import android.content.Context
 import androidx.compose.runtime.Composable
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.models.StoreProduct
 import com.revenuecat.purchases.models.StoreTransaction
 import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
+import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopupConfig
+import com.volvoxmobile.volvoxhub.ui.web.WebScreen
 
-class VolvoxHub private constructor(configuration: Configuration) {
-
+class VolvoxHub private constructor(
+    configuration: Configuration,
+) {
     /**
      * VolvoxHubService instance to handle the hub operations
      */
@@ -24,7 +28,6 @@ class VolvoxHub private constructor(configuration: Configuration) {
     internal val rcBillingHelper by lazy {
         RcBillingHelper()
     }
-
 
     init {
         volvoxHubService.initialize(configuration)
@@ -48,13 +51,41 @@ class VolvoxHub private constructor(configuration: Configuration) {
             }
         }
 
-        fun getInstance(): VolvoxHub {
-            return instance ?: throw IllegalStateException("VolvoxHub is not initialized. Call initialize() first.")
+        fun getInstance(): VolvoxHub = instance ?: throw IllegalStateException("VolvoxHub is not initialized. Call initialize() first.")
+
+        @Composable
+        fun ShowBannedPopup(
+            isVisible: Boolean,
+            config: BannedPopupConfig,
+        ) {
+            BannedPopup(isVisible = isVisible, config = config)
         }
 
         @Composable
-        fun ShowBannedPopup(isVisible: Boolean, config: BannedPopupConfig) {
-            BannedPopup(isVisible = isVisible, config = config)
+        fun ShowCustomWebScreen(
+            url: String,
+            title: String,
+            onClose: () -> Unit,
+        ) {
+            WebScreen(url = url, title, onClose = onClose)
+        }
+
+        @Composable
+        fun ShowPrivacyPolicyScreen(
+            context: Context,
+            onClose: () -> Unit,
+        ) {
+            val privacyPolicyUrl = VolvoxHubService.instance.getPrivacyPolicyUrl()
+            WebScreen(url = privacyPolicyUrl, Localizations.get(context, "Privacy Policy"), onClose = onClose)
+        }
+
+        @Composable
+        fun ShowTermsOfServiceScreen(
+            context: Context,
+            onClose: () -> Unit,
+        ) {
+            val termsOfServiceUrl = VolvoxHubService.instance.getTermsOfServiceUrl()
+            WebScreen(url = termsOfServiceUrl, Localizations.get(context, "Terms of Service"), onClose = onClose)
         }
     }
 
@@ -84,7 +115,7 @@ class VolvoxHub private constructor(configuration: Configuration) {
 
     /**
      * Launch the purchase flow for the given product
-     * @param activity activity to launch the purchase flow
+     * @param activity activity to launch the purchase flowz
      * @param sku product to purchase
      * @param errorCallback error callback for the purchase flow
      * @param successCallback success callback for the purchase flow
@@ -93,7 +124,7 @@ class VolvoxHub private constructor(configuration: Configuration) {
         activity: Activity,
         sku: StoreProduct,
         errorCallback: (PurchasesError) -> Unit,
-        successCallback: (StoreTransaction?) -> Unit
+        successCallback: (StoreTransaction?) -> Unit,
     ) {
         rcBillingHelper.launchPurchaseFlow(activity, sku, errorCallback, successCallback)
     }
@@ -101,7 +132,10 @@ class VolvoxHub private constructor(configuration: Configuration) {
     /**
      * Restore the purchase for the user
      */
-    fun restorePurchase(errorCallback: (PurchasesError) -> Unit, successCallback: () -> Unit) {
+    fun restorePurchase(
+        errorCallback: (PurchasesError) -> Unit,
+        successCallback: () -> Unit,
+    ) {
         rcBillingHelper.restorePurchase(errorCallback, successCallback)
     }
 }

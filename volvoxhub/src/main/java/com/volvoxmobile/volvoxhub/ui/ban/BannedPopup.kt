@@ -28,25 +28,27 @@ import com.volvoxmobile.volvoxhub.ui.theme.HubTheme
 @Composable
 fun BannedPopup(
     isVisible: Boolean,
-    config: BannedPopupConfig
+    config: BannedPopupConfig,
 ) {
     if (isVisible) {
-        Dialog(onDismissRequest = {  }) {
+        Dialog(onDismissRequest = { }) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White, shape = RoundedCornerShape(12.dp))
-                    .padding(16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Color.White, shape = RoundedCornerShape(12.dp))
+                        .padding(16.dp),
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Image(
                         painter = config.imagePainter,
                         contentDescription = "Banned",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(bottom = 16.dp)
+                        modifier =
+                            Modifier
+                                .size(100.dp)
+                                .padding(bottom = 16.dp),
                     )
                     Text(
                         text = config.titleText,
@@ -58,15 +60,16 @@ fun BannedPopup(
                         text = config.messageText,
                         style = config.messageTextStyle,
                         modifier = Modifier.padding(bottom = 16.dp),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                     Button(
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                         shape = RoundedCornerShape(8.dp),
-                        onClick = { }
+                        onClick = { },
                     ) {
                         Text(text = config.buttonText, style = config.buttonTextStyle)
                     }
@@ -76,19 +79,19 @@ fun BannedPopup(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun BannedPopupPreview() {
     HubTheme {
         BannedPopup(
             isVisible = true,
-            config = BannedPopupConfig(
-                imagePainter = painterResource(id = R.drawable.ic_ban),
-                titleTextStyle = MaterialTheme.typography.bodyLarge,
-                messageTextStyle = MaterialTheme.typography.bodySmall,
-                buttonTextStyle = MaterialTheme.typography.labelLarge
-            )
+            config =
+                BannedPopupConfig(
+                    imagePainter = painterResource(id = R.drawable.ic_ban),
+                    titleTextStyle = MaterialTheme.typography.bodyLarge,
+                    messageTextStyle = MaterialTheme.typography.bodySmall,
+                    buttonTextStyle = MaterialTheme.typography.labelLarge,
+                ),
         )
     }
 }

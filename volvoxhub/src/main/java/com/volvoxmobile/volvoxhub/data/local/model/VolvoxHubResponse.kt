@@ -4,5 +4,5 @@ data class VolvoxHubResponse(
     val banned: Boolean,
     val premiumStatus: Boolean,
     val forceUpdate: Boolean,
-    val isRooted: Boolean
+    val isRooted: Boolean,
 )

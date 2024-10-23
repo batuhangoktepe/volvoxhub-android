@@ -1,6 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-
 buildscript {
     repositories {
         google()
@@ -11,9 +10,7 @@ buildscript {
         classpath(libs.hilt.android.gradle.plugin)
         classpath(libs.gradle)
     }
-
 }
-
 
 plugins {
     alias(libs.plugins.android.application) apply false

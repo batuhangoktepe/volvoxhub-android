@@ -4,7 +4,6 @@ import android.content.Context
 import com.volvoxmobile.volvoxhub.common.extensions.resIdByName
 
 object Localizations {
-
     private val localizationsMap: MutableMap<String, String> = mutableMapOf()
 
     fun set(localizationsMap: Map<String, String>) {
@@ -12,8 +11,11 @@ object Localizations {
         this.localizationsMap.putAll(localizationsMap)
     }
 
-    fun get(context: Context, key: String): String {
-        return if (localizationsMap.containsKey(key)) {
+    fun get(
+        context: Context,
+        key: String,
+    ): String =
+        if (localizationsMap.containsKey(key)) {
             localizationsMap[key].orEmpty()
         } else {
             try {
@@ -22,17 +24,13 @@ object Localizations {
                 key
             }
         }
-    }
 
-    fun getOrEmpty(key: String): String {
-        return tryOrNull { localizationsMap[key] } ?: StringUtils.EMPTY
-    }
+    fun getOrEmpty(key: String): String = tryOrNull { localizationsMap[key] } ?: StringUtils.EMPTY
 
-    fun getOrKey(key: String): String {
-        return tryOrNull { localizationsMap[key] } ?: key
-    }
+    fun getOrKey(key: String): String = tryOrNull { localizationsMap[key] } ?: key
 
-    fun getOrDefault(key: String, default: String): String {
-        return tryOrNull { localizationsMap[key] } ?: default
-    }
+    fun getOrDefault(
+        key: String,
+        default: String,
+    ): String = tryOrNull { localizationsMap[key] } ?: default
 }

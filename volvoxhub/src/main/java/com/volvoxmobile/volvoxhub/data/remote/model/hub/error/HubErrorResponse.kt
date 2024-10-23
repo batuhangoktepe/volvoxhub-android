@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class HubErrorResponse(
     @SerializedName("statusCode") val statusCode: Int,
-    @SerializedName("message") val message: String?
+    @SerializedName("message") val message: String?,
 )

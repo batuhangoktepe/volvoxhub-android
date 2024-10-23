@@ -30,6 +30,7 @@ import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiHeaderInterceptor
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiService
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
 import com.volvoxmobile.volvoxhub.db.AppDatabase
 import com.volvoxmobile.volvoxhub.domain.local.localization.LocalizationRepositoryImpl
 import com.volvoxmobile.volvoxhub.domain.local.preferences.PreferencesRepositoryImpl
@@ -47,7 +48,6 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 internal class VolvoxHubService {
-
     /**
      * Singleton instance of the service
      */
@@ -83,10 +83,12 @@ internal class VolvoxHubService {
      * Room database for the sdk
      */
     private val roomDb by lazy {
-        Room.databaseBuilder(
-            configuration.context,
-            AppDatabase::class.java, "hub.db"
-        ).build()
+        Room
+            .databaseBuilder(
+                configuration.context,
+                AppDatabase::class.java,
+                "hub.db",
+            ).build()
     }
 
     /**
@@ -114,7 +116,8 @@ internal class VolvoxHubService {
      * OkHttp client for the API requests
      */
     private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(hubApiHeaderInterceptor)
@@ -126,7 +129,8 @@ internal class VolvoxHubService {
      * Retrofit instance for the API requests
      */
     private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(BaseUrlDecider.getApiBaseUrl())
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(Gson()))
@@ -181,7 +185,7 @@ internal class VolvoxHubService {
             dpi = context.getScreenDpi(),
             oneSignalToken = preferencesRepository.getPushToken(),
             oneSignalPlayerId = preferencesRepository.getOneSignalPlayerId(),
-            filePath = configuration.context.filesDir.absolutePath
+            filePath = configuration.context.filesDir.absolutePath,
         )
     }
 
@@ -223,13 +227,17 @@ internal class VolvoxHubService {
      * @param response register response from the hub
      * @param hubInitListener listener for the hub init
      */
-    private suspend fun handleInitializationSuccess(response: RegisterBaseResponse, hubInitListener: VolvoxHubInitListener) {
-        val volvoxHubResponse = VolvoxHubResponse(
-            banned = response.device.banStatus,
-            premiumStatus = response.device.premiumStatus,
-            forceUpdate = response.config.forceUpdate,
-            isRooted = rootCheck()
-        )
+    private suspend fun handleInitializationSuccess(
+        response: RegisterBaseResponse,
+        hubInitListener: VolvoxHubInitListener,
+    ) {
+        val volvoxHubResponse =
+            VolvoxHubResponse(
+                banned = response.device.banStatus,
+                premiumStatus = response.device.premiumStatus,
+                forceUpdate = response.config.forceUpdate,
+                isRooted = rootCheck(),
+            )
 
         initializeFirebase()
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey)
@@ -237,6 +245,7 @@ internal class VolvoxHubService {
         initializeRcBillingHelper(response.thirdParty.revenuecatId)
         initOneSignalSDK(response.thirdParty.oneSignalAppId)
         initAmplitudeSdk(response.thirdParty.amplitudeApiKey)
+        saveConfigUrls(response.config)
 
         hubInitListener.onInitCompleted(volvoxHubResponse)
     }
@@ -248,7 +257,10 @@ internal class VolvoxHubService {
     private fun handleInitializeSdksError(response: RegisterBaseResponse) {
         val thirdPartyResponse = response.thirdParty
 
-        fun logIfEmpty(value: String, logMessage: String) {
+        fun logIfEmpty(
+            value: String,
+            logMessage: String,
+        ) {
             if (value.isEmpty()) {
                 VolvoxHubLogManager.log(logMessage, VolvoxHubLogLevel.ERROR)
             }
@@ -265,10 +277,11 @@ internal class VolvoxHubService {
      * Initialize the RevenueCat billing helper
      */
     private fun initializeRcBillingHelper(rcKey: String) {
+        if (rcKey.isEmpty()) return
         VolvoxHub.getInstance().rcBillingHelper.init(
             context = configuration.context,
             rcKey = rcKey,
-            uuid = DeviceUuidFactory.create(configuration.context)
+            uuid = DeviceUuidFactory.create(configuration.context),
         )
     }
 
@@ -309,18 +322,31 @@ internal class VolvoxHubService {
             val needLocalizationFetch = savedLocalization == null || savedLocalization.localizationUrl != localizationUrl
             if (needLocalizationFetch) {
                 val localizationResponse = Fuel.get(localizationUrl).awaitString()
-                val localizations: Map<String, String> = Gson().fromJson(localizationResponse, object : TypeToken<Map<String, String>>() {}.type)
-                val localizationEntity = LocalizationEntity(
-                    id = LocalizationEntity.DEFAULT_LOCALIZATION_ID,
-                    localizationUrl = localizationUrl,
-                    localizations = localizations
-                )
+                val localizations: Map<String, String> =
+                    Gson().fromJson(
+                        localizationResponse,
+                        object : TypeToken<Map<String, String>>() {}.type,
+                    )
+                val localizationEntity =
+                    LocalizationEntity(
+                        id = LocalizationEntity.DEFAULT_LOCALIZATION_ID,
+                        localizationUrl = localizationUrl,
+                        localizations = localizations,
+                    )
                 localizationRepository.save(localizationEntity = localizationEntity)
                 Localizations.set(localizationsMap = localizations)
             } else {
                 Localizations.set(localizationsMap = savedLocalization!!.localizations)
             }
         }
+    }
+
+    /**
+     * Save the config URLs to the shared preferences
+     */
+    private fun saveConfigUrls(config: RegisterConfigResponse) {
+        preferencesRepository.setPrivacyPolicyUrl(config.privacyPolicyUrl)
+        preferencesRepository.setTermsOfServiceUrl(config.eula)
     }
 
     /**
@@ -359,25 +385,38 @@ internal class VolvoxHubService {
      * Send a new register request to the hub with the updated values
      */
     private fun checkRequestChanges() {
-        val currentValues = mapOf(
-            "PushToken" to preferencesRepository.getPushToken(),
-            "OneSignalPlayerId" to preferencesRepository.getOneSignalPlayerId(),
-            "AdvertisingId" to preferencesRepository.getAppsFlyerUserId(),
-        )
+        val currentValues =
+            mapOf(
+                "PushToken" to preferencesRepository.getPushToken(),
+                "OneSignalPlayerId" to preferencesRepository.getOneSignalPlayerId(),
+                "AdvertisingId" to preferencesRepository.getAppsFlyerUserId(),
+            )
 
-        val newValues = mapOf(
-            "PushToken" to (OneSignal.getDeviceState()?.pushToken.orEmpty()),
-            "OneSignalPlayerId" to (OneSignal.getDeviceState()?.userId.orEmpty()),
-            "AdvertisingId" to AppsFlyerLib.getInstance().getAppsFlyerUID(configuration.context).orEmpty(),
-        )
+        val newValues =
+            mapOf(
+                "PushToken" to (OneSignal.getDeviceState()?.pushToken.orEmpty()),
+                "OneSignalPlayerId" to (OneSignal.getDeviceState()?.userId.orEmpty()),
+                "AdvertisingId" to AppsFlyerLib.getInstance().getAppsFlyerUID(configuration.context).orEmpty(),
+            )
 
-        val hasChanges = currentValues.any { (key, currentValue) ->
-            newValues[key] != currentValue
-        }
+        val hasChanges =
+            currentValues.any { (key, currentValue) ->
+                newValues[key] != currentValue
+            }
 
         if (hasChanges) {
             preferencesRepository.setInitializeSucceeded(false)
             updateRegisterRequest()
         }
     }
+
+    /**
+     * Get the privacy policy url
+     */
+    fun getPrivacyPolicyUrl(): String = preferencesRepository.getPrivacyPolicyUrl()
+
+    /**
+     * Get the terms of service url
+     */
+    fun getTermsOfServiceUrl(): String = preferencesRepository.getTermsOfServiceUrl()
 }

@@ -9,7 +9,6 @@ import com.volvoxmobile.volvoxhub.data.local.model.db.LocalizationEntity
 
 @Dao
 interface LocalizationEntityDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(localizationEntity: LocalizationEntity)
 

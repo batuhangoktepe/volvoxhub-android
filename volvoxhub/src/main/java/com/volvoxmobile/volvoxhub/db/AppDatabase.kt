@@ -11,12 +11,11 @@ import com.volvoxmobile.volvoxhub.data.local.model.db.LocalizationEntity
         LocalizationEntity::class,
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(
     LocalizationTypeConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun localizationEntityDao(): LocalizationEntityDao
 }

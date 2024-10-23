@@ -8,9 +8,8 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.error.HubErrorResponse
 import retrofit2.HttpException
 import java.lang.Exception
 
-
-fun Throwable.asHubApiException(): HubApiException {
-    return if (this is HttpException) {
+fun Throwable.asHubApiException(): HubApiException =
+    if (this is HttpException) {
         try {
             val gson = Gson()
             val type = object : TypeToken<HubErrorResponse>() {}.type
@@ -23,4 +22,3 @@ fun Throwable.asHubApiException(): HubApiException {
     } else {
         HubApiException()
     }
-}

@@ -14,8 +14,7 @@ import com.revenuecat.purchases.models.StoreTransaction
 import com.volvoxmobile.volvoxhub.VolvoxHubLogManager
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 
-internal class RcBillingHelper: UpdatedCustomerInfoListener {
-
+internal class RcBillingHelper : UpdatedCustomerInfoListener {
     private companion object {
         const val MAX_RETRY_COUNT = 10
     }
@@ -31,7 +30,11 @@ internal class RcBillingHelper: UpdatedCustomerInfoListener {
      * Active log level is set to DEBUG if the SDK is in debug mode
      * Fetch available products and store them in the skuDetails variable
      */
-    fun init(context: Context, uuid: String, rcKey: String) {
+    fun init(
+        context: Context,
+        uuid: String,
+        rcKey: String,
+    ) {
         configurePurchases(context, uuid, rcKey)
         setLoggingLevelIfNeeded()
         anonymousAppDeviceGUID = AppEventsLogger.getAnonymousAppDeviceGUID(context)
@@ -40,11 +43,16 @@ internal class RcBillingHelper: UpdatedCustomerInfoListener {
         fetchAvailableProducts()
     }
 
-    private fun configurePurchases(context: Context, uuid: String, rcKey: String) {
+    private fun configurePurchases(
+        context: Context,
+        uuid: String,
+        rcKey: String,
+    ) {
         Purchases.configure(
-            PurchasesConfiguration.Builder(context, rcKey)
+            PurchasesConfiguration
+                .Builder(context, rcKey)
                 .appUserID(uuid)
-                .build()
+                .build(),
         )
         Purchases.sharedInstance.updatedCustomerInfoListener = this
         Purchases.sharedInstance.collectDeviceIdentifiers()
@@ -55,7 +63,6 @@ internal class RcBillingHelper: UpdatedCustomerInfoListener {
             Purchases.logLevel = LogLevel.DEBUG
         }
     }
-
 
     private fun setUserDeviceId(uuid: String) {
         Purchases.sharedInstance.logIn(uuid)
@@ -71,44 +78,53 @@ internal class RcBillingHelper: UpdatedCustomerInfoListener {
         activity: Activity,
         sku: StoreProduct,
         errorCallback: (PurchasesError) -> Unit,
-        successCallback: (StoreTransaction?) -> Unit
+        successCallback: (StoreTransaction?) -> Unit,
     ) {
-        Purchases.sharedInstance.purchase(PurchaseParams.Builder(activity, sku).build(), object: PurchaseCallback {
-            override fun onCompleted(
-                storeTransaction: StoreTransaction,
-                customerInfo: CustomerInfo
-            ) {
-                successCallback.invoke(storeTransaction)
-            }
+        Purchases.sharedInstance.purchase(
+            PurchaseParams.Builder(activity, sku).build(),
+            object : PurchaseCallback {
+                override fun onCompleted(
+                    storeTransaction: StoreTransaction,
+                    customerInfo: CustomerInfo,
+                ) {
+                    successCallback.invoke(storeTransaction)
+                }
 
-            override fun onError(error: PurchasesError, userCancelled: Boolean) {
-                handleError(error)
-                errorCallback.invoke(error)
-            }
-        })
+                override fun onError(
+                    error: PurchasesError,
+                    userCancelled: Boolean,
+                ) {
+                    handleError(error)
+                    errorCallback.invoke(error)
+                }
+            },
+        )
     }
 
-    fun restorePurchase(errorCallback: (PurchasesError) -> Unit, successCallback: () -> Unit) {
-
-        Purchases.sharedInstance.restorePurchases(object : ReceiveCustomerInfoCallback {
-
-            override fun onError(error: PurchasesError) {
-                handleError(error)
-            }
-
-            override fun onReceived(customerInfo: CustomerInfo) {
-                if (customerInfo.activeSubscriptions.isNotEmpty()) {
-                    successCallback.invoke()
-                } else {
-                    errorCallback.invoke(
-                        PurchasesError(
-                            PurchasesErrorCode.UnknownError,
-                            "No active subscriptions found"
-                        )
-                    )
+    fun restorePurchase(
+        errorCallback: (PurchasesError) -> Unit,
+        successCallback: () -> Unit,
+    ) {
+        Purchases.sharedInstance.restorePurchases(
+            object : ReceiveCustomerInfoCallback {
+                override fun onError(error: PurchasesError) {
+                    handleError(error)
                 }
-            }
-        })
+
+                override fun onReceived(customerInfo: CustomerInfo) {
+                    if (customerInfo.activeSubscriptions.isNotEmpty()) {
+                        successCallback.invoke()
+                    } else {
+                        errorCallback.invoke(
+                            PurchasesError(
+                                PurchasesErrorCode.UnknownError,
+                                "No active subscriptions found",
+                            ),
+                        )
+                    }
+                }
+            },
+        )
     }
 
     fun getSubscriptionSkuDetails(skuDetailsCallback: (List<StoreProduct>) -> Unit) {
@@ -134,28 +150,41 @@ internal class RcBillingHelper: UpdatedCustomerInfoListener {
     }
 
     private fun fetchAvailableProducts() {
-        Purchases.sharedInstance.getOfferings(object : ReceiveOfferingsCallback {
-            override fun onError(error: PurchasesError) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    if (retryCount < MAX_RETRY_COUNT) {
-                        fetchAvailableProducts()
-                        retryCount++
-                    } else {
-                        handleError(error, "Failed to fetch available products")
-                    }
-                }, 3000L)
-                handleError(error)
-            }
+        Purchases.sharedInstance.getOfferings(
+            object : ReceiveOfferingsCallback {
+                override fun onError(error: PurchasesError) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (retryCount < MAX_RETRY_COUNT) {
+                            fetchAvailableProducts()
+                            retryCount++
+                        } else {
+                            handleError(error, "Failed to fetch available products")
+                        }
+                    }, 3000L)
+                    handleError(error)
+                }
 
-            override fun onReceived(offerings: Offerings) {
-                val subscriptions = offerings.all["Subscriptions"]?.availablePackages?.map { it.product }.orEmpty()
-                val consumables = offerings.all["Consumables"]?.availablePackages?.map { it.product }.orEmpty()
-                skuDetails = subscriptions + consumables
-            }
-        })
+                override fun onReceived(offerings: Offerings) {
+                    val subscriptions =
+                        offerings.all["Subscriptions"]
+                            ?.availablePackages
+                            ?.map { it.product }
+                            .orEmpty()
+                    val consumables =
+                        offerings.all["Consumables"]
+                            ?.availablePackages
+                            ?.map { it.product }
+                            .orEmpty()
+                    skuDetails = subscriptions + consumables
+                }
+            },
+        )
     }
 
-    private fun handleError(error: PurchasesError, defaultMessage: String = "An error occurred") {
+    private fun handleError(
+        error: PurchasesError,
+        defaultMessage: String = "An error occurred",
+    ) {
         VolvoxHubLogManager.log(error.message ?: defaultMessage, VolvoxHubLogLevel.ERROR)
     }
 

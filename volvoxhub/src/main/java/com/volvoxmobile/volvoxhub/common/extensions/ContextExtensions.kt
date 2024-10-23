@@ -40,8 +40,8 @@ fun Context.getScreenDpi(): String {
     return displayMetrics.densityDpi.toString()
 }
 
-fun Context.getAdvertisingId(): String? {
-    return try {
+fun Context.getAdvertisingId(): String? =
+    try {
         val advertisingIdInfo = AdvertisingIdClient.getAdvertisingIdInfo(this)
         if (advertisingIdInfo.isLimitAdTrackingEnabled) {
             null
@@ -55,8 +55,8 @@ fun Context.getAdvertisingId(): String? {
         e.printStackTrace()
         null
     }
-}
 
-fun Context.resIdByName(resIdName: String, resType: String): Int {
-    return resources.getIdentifier(resIdName, resType, packageName)
-}
+fun Context.resIdByName(
+    resIdName: String,
+    resType: String,
+): Int = resources.getIdentifier(resIdName, resType, packageName)

@@ -26,7 +26,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
-
     private val splashViewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,33 +43,44 @@ class SplashActivity : ComponentActivity() {
 @Composable
 fun SplashScreen(splashViewModel: SplashViewModel) {
     val isBannedPopupVisible by splashViewModel.isBannedPopupVisible.collectAsState()
+    val isWebScreenVisible by splashViewModel.isWebScreenVisible.collectAsState()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Greeting(
             name = Localizations.get(context = LocalContext.current, "Android"),
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
         )
 
         if (isBannedPopupVisible) {
             VolvoxHub.ShowBannedPopup(
                 isVisible = true,
-                config = BannedPopupConfig(
-                    titleText = "Banned",
-                    imagePainter = painterResource(id = R.drawable.ic_ban),
-                    titleTextStyle = AppTypography.titleMedium,
-                    messageTextStyle = AppTypography.bodySmall,
-                    buttonTextStyle = AppTypography.bodyMedium,
-                )
+                config =
+                    BannedPopupConfig(
+                        titleText = "Banned",
+                        imagePainter = painterResource(id = R.drawable.ic_ban),
+                        titleTextStyle = AppTypography.titleMedium,
+                        messageTextStyle = AppTypography.bodySmall,
+                        buttonTextStyle = AppTypography.bodyMedium,
+                    ),
             )
+        }
+
+        if (isWebScreenVisible) {
+            VolvoxHub.ShowPrivacyPolicyScreen(context = LocalContext.current) {
+                splashViewModel.setWebScreenVisible(false)
+            }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(
+    name: String,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = "Hello $name!",
-        modifier = modifier
+        modifier = modifier,
     )
 }
 

@@ -11,18 +11,21 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 object AmplitudeManager {
-
     private lateinit var amplitude: Amplitude
 
     private val scope = CoroutineScope(Dispatchers.IO + Job())
 
-    internal fun initialize(context: Context, apiKey: String) {
-        amplitude = Amplitude(
-            Configuration(
-                apiKey = apiKey,
-                context = context
+    internal fun initialize(
+        context: Context,
+        apiKey: String,
+    ) {
+        amplitude =
+            Amplitude(
+                Configuration(
+                    apiKey = apiKey,
+                    context = context,
+                ),
             )
-        )
         val identify = Identify()
         identify.set("user-platform", "android")
         amplitude.identify(identify)
@@ -31,7 +34,7 @@ object AmplitudeManager {
 
     fun logEvent(
         eventName: String,
-        eventProperties: Map<String, Any> = emptyMap()
+        eventProperties: Map<String, Any> = emptyMap(),
     ) {
         scope.launch {
             amplitude.track(eventName, eventProperties)

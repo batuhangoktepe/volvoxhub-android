@@ -7,9 +7,8 @@ import androidx.room.PrimaryKey
 data class LocalizationEntity(
     @PrimaryKey val id: Int,
     val localizationUrl: String,
-    val localizations: Map<String, String>
+    val localizations: Map<String, String>,
 ) {
-
     companion object {
         const val DEFAULT_LOCALIZATION_ID = 1
     }

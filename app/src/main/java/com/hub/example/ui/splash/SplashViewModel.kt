@@ -11,23 +11,31 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(): ViewModel() {
+class SplashViewModel
+    @Inject
+    constructor() : ViewModel() {
+        private val _isBannedPopupVisible = MutableStateFlow(false)
+        private val _setWebScreenVisible = MutableStateFlow(true)
 
-    private val _isBannedPopupVisible = MutableStateFlow(false)
-    val isBannedPopupVisible: StateFlow<Boolean> = _isBannedPopupVisible
+        val isBannedPopupVisible: StateFlow<Boolean> = _isBannedPopupVisible
+        val isWebScreenVisible: StateFlow<Boolean> = _setWebScreenVisible
 
+        init {
+            VolvoxHub.getInstance().startAuthorization(
+                object : VolvoxHubInitListener {
+                    override fun onInitCompleted(volvoxHubResponse: VolvoxHubResponse) {
+                        Log.e("VolvoxHub", "onInitCompleted: $volvoxHubResponse")
+                        _isBannedPopupVisible.value = volvoxHubResponse.banned
+                    }
 
-    init {
-        VolvoxHub.getInstance().startAuthorization(object : VolvoxHubInitListener {
-            override fun onInitCompleted(volvoxHubResponse: VolvoxHubResponse) {
-                Log.e("VolvoxHub", "onInitCompleted: $volvoxHubResponse")
-                _isBannedPopupVisible.value = volvoxHubResponse.banned
-            }
+                    override fun onInitFailed(error: Int) {
+                        Log.e("VolvoxHub", "onInitFailed: $error")
+                    }
+                },
+            )
+        }
 
-            override fun onInitFailed(error: Int) {
-                Log.e("VolvoxHub", "onInitFailed: $error")
-            }
-        })
+        fun setWebScreenVisible(isVisible: Boolean) {
+            _setWebScreenVisible.value = isVisible
+        }
     }
-
-}

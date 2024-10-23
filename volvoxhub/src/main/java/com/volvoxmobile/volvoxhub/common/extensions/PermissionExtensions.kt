@@ -10,13 +10,13 @@ fun Context.isLocationPermissionGranted(): Boolean {
 }
 
 fun Context.isStoragePermissionGranted(): Boolean {
-
     if (Build.VERSION.SDK_INT >= 33) {
         return true
     }
     val readExternalStorageGranted = this.checkCallingOrSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
     val writeExternalStorageGranted = this.checkCallingOrSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    return readExternalStorageGranted == PackageManager.PERMISSION_GRANTED && writeExternalStorageGranted == PackageManager.PERMISSION_GRANTED
+    return readExternalStorageGranted == PackageManager.PERMISSION_GRANTED &&
+        writeExternalStorageGranted == PackageManager.PERMISSION_GRANTED
 }
 
 fun Context.isRecordAudioPermissionGranted(): Boolean {

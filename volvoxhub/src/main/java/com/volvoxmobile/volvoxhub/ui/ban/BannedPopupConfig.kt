@@ -10,6 +10,5 @@ data class BannedPopupConfig(
     val imagePainter: Painter,
     val titleTextStyle: TextStyle,
     val messageTextStyle: TextStyle,
-    val buttonTextStyle: TextStyle
+    val buttonTextStyle: TextStyle,
 )
-

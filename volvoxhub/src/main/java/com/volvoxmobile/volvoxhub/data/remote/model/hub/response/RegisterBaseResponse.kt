@@ -8,5 +8,5 @@ data class RegisterBaseResponse(
     @SerializedName("vid") val vid: String,
     @SerializedName("device") val device: RegisterDeviceResponse,
     @SerializedName("config") val config: RegisterConfigResponse,
-    @SerializedName("third_party") val thirdParty: RegisterThirdPartyResponse
+    @SerializedName("third_party") val thirdParty: RegisterThirdPartyResponse,
 )
