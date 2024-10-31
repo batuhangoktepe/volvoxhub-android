@@ -240,11 +240,11 @@ internal class VolvoxHubService {
             )
 
         initializeFirebase()
-        initAppsflyerSdk(response.thirdParty.appsflyerDevKey)
+        initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
         handleLocalizations(response.config.localizationUrl)
-        initializeRcBillingHelper(response.thirdParty.revenuecatId)
-        initOneSignalSDK(response.thirdParty.oneSignalAppId)
-        initAmplitudeSdk(response.thirdParty.amplitudeApiKey)
+        initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty())
+        initOneSignalSDK(response.thirdParty.oneSignalAppId.orEmpty())
+        initAmplitudeSdk(response.thirdParty.amplitudeApiKey.orEmpty())
         saveConfigUrls(response.config)
 
         hubInitListener.onInitCompleted(volvoxHubResponse)
@@ -266,11 +266,11 @@ internal class VolvoxHubService {
             }
         }
 
-        logIfEmpty(thirdPartyResponse.oneSignalAppId, ConfigureStrings.ONE_SIGNAL_APP_ID_EMPTY)
-        logIfEmpty(thirdPartyResponse.revenuecatId, ConfigureStrings.REVENUECAT_ID_EMPTY)
-        logIfEmpty(thirdPartyResponse.appsflyerDevKey, ConfigureStrings.APPSFLYER_DEV_KEY_EMPTY)
-        logIfEmpty(thirdPartyResponse.amplitudeApiKey, ConfigureStrings.AMPLITUDE_API_KEY_EMPTY)
-        logIfEmpty(thirdPartyResponse.appsflyerAppId, ConfigureStrings.APPSFLYER_APP_ID_EMPTY)
+        logIfEmpty(thirdPartyResponse.oneSignalAppId.orEmpty(), ConfigureStrings.ONE_SIGNAL_APP_ID_EMPTY)
+        logIfEmpty(thirdPartyResponse.revenuecatId.orEmpty(), ConfigureStrings.REVENUECAT_ID_EMPTY)
+        logIfEmpty(thirdPartyResponse.appsflyerDevKey.orEmpty(), ConfigureStrings.APPSFLYER_DEV_KEY_EMPTY)
+        logIfEmpty(thirdPartyResponse.amplitudeApiKey.orEmpty(), ConfigureStrings.AMPLITUDE_API_KEY_EMPTY)
+        logIfEmpty(thirdPartyResponse.appsflyerAppId.orEmpty(), ConfigureStrings.APPSFLYER_APP_ID_EMPTY)
     }
 
     /**

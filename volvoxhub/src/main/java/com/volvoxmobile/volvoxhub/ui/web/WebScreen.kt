@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,9 +74,19 @@ fun WebViewContent(url: String) {
                 webViewClient = WebViewClient()
                 webChromeClient = WebChromeClient()
                 settings.javaScriptEnabled = true
-                loadUrl(url)
+                if(url.endsWith("pdf")) {
+                    loadUrl("https://docs.google.com/gview?embedded=true&url=$url")
+                } else {
+                    loadUrl(url)
+                }
             }
         },
         modifier = Modifier.fillMaxSize(),
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WebScreenPreview() {
+    WebScreen(url = "https://www.google.com", title = "Google", onClose = {})
 }

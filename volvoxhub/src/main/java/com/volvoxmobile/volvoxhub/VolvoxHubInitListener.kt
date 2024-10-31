@@ -9,6 +9,5 @@ import com.volvoxmobile.volvoxhub.data.local.model.VolvoxHubResponse
  */
 interface VolvoxHubInitListener {
     fun onInitCompleted(volvoxHubResponse: VolvoxHubResponse)
-
     fun onInitFailed(error: Int)
 }

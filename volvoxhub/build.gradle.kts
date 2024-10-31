@@ -86,6 +86,7 @@ dependencies {
 
     // Purchases
     implementation(libs.revenuecat)
+    implementation(libs.revenuecatui)
 
     // Facebook
     implementation(libs.facebookAndroidSdk)

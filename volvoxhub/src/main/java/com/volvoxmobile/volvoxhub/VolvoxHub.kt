@@ -3,9 +3,14 @@ package com.volvoxmobile.volvoxhub
 import android.app.Activity
 import android.content.Context
 import androidx.compose.runtime.Composable
+import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.models.StoreProduct
 import com.revenuecat.purchases.models.StoreTransaction
+import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
+import com.revenuecat.purchases.ui.revenuecatui.PaywallDialog
+import com.revenuecat.purchases.ui.revenuecatui.PaywallDialogOptions
+import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
@@ -51,7 +56,8 @@ class VolvoxHub private constructor(
             }
         }
 
-        fun getInstance(): VolvoxHub = instance ?: throw IllegalStateException("VolvoxHub is not initialized. Call initialize() first.")
+        fun getInstance(): VolvoxHub = instance
+            ?: throw IllegalStateException("VolvoxHub is not initialized. Call initialize() first.")
 
         @Composable
         fun ShowBannedPopup(
@@ -76,7 +82,11 @@ class VolvoxHub private constructor(
             onClose: () -> Unit,
         ) {
             val privacyPolicyUrl = VolvoxHubService.instance.getPrivacyPolicyUrl()
-            WebScreen(url = privacyPolicyUrl, Localizations.get(context, "Privacy Policy"), onClose = onClose)
+            WebScreen(
+                url = privacyPolicyUrl,
+                Localizations.get(context, "Privacy Policy"),
+                onClose = onClose
+            )
         }
 
         @Composable
@@ -85,7 +95,33 @@ class VolvoxHub private constructor(
             onClose: () -> Unit,
         ) {
             val termsOfServiceUrl = VolvoxHubService.instance.getTermsOfServiceUrl()
-            WebScreen(url = termsOfServiceUrl, Localizations.get(context, "Terms of Service"), onClose = onClose)
+            WebScreen(
+                url = termsOfServiceUrl,
+                Localizations.get(context, "Terms of Service"),
+                onClose = onClose
+            )
+        }
+
+        @OptIn(ExperimentalPreviewRevenueCatUIPurchasesAPI::class)
+        @Composable
+        fun PaywallScreen(entitlementId: String) {
+            PaywallDialog(
+                PaywallDialogOptions.Builder()
+                    .setRequiredEntitlementIdentifier(entitlementId)
+                    .setListener(
+                        object : PaywallListener {
+                            override fun onPurchaseCompleted(
+                                customerInfo: CustomerInfo,
+                                storeTransaction: StoreTransaction
+                            ) {
+                            }
+
+                            override fun onRestoreCompleted(customerInfo: CustomerInfo) {}
+                        }
+                    )
+                    .build()
+            )
+
         }
     }
 

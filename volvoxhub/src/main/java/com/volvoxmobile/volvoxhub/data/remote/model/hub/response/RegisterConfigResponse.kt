@@ -6,6 +6,6 @@ data class RegisterConfigResponse(
     @SerializedName("store_version") val storeVersion: String,
     @SerializedName("force_update") val forceUpdate: Boolean,
     @SerializedName("localization_url") val localizationUrl: String,
-    @SerializedName("privacyPolicy") val privacyPolicyUrl: String,
-    @SerializedName("eula") val eula: String,
+    @SerializedName("privacy_policy_url") val privacyPolicyUrl: String,
+    @SerializedName("tos_url") val eula: String,
 )

@@ -15,7 +15,7 @@ class SplashViewModel
     @Inject
     constructor() : ViewModel() {
         private val _isBannedPopupVisible = MutableStateFlow(false)
-        private val _setWebScreenVisible = MutableStateFlow(true)
+        private val _setWebScreenVisible = MutableStateFlow(false)
 
         val isBannedPopupVisible: StateFlow<Boolean> = _isBannedPopupVisible
         val isWebScreenVisible: StateFlow<Boolean> = _setWebScreenVisible

@@ -72,10 +72,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Network
-    implementation(libs.retrofit)
-    implementation(libs.okhttp)
-
     // Volvoxhub
     implementation(project(":volvoxhub"))
 
@@ -83,10 +79,6 @@ dependencies {
     kapt(libs.hilt.compiler)
     kapt(libs.dagger.compiler)
     implementation(libs.hilt)
-
-    // Firebase
-    implementation(platform(libs.firebaseBom))
-    implementation(libs.firebaseAnalytics)
 }
 
 kapt {
