@@ -1,10 +1,14 @@
 package com.volvoxmobile.volvoxhub
 
+import android.app.Application
 import android.content.Context
+import android.media.FaceDetector.Face
 import android.os.Build
 import androidx.room.Room
 import com.appsflyer.AppsFlyerLib
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
 import com.github.michaelbull.result.get
@@ -240,6 +244,7 @@ internal class VolvoxHubService {
             )
 
         initializeFirebase()
+        initializeFacebook(response.thirdParty.facebookAppId.orEmpty(), response.thirdParty.facebookClientToken.orEmpty())
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
         handleLocalizations(response.config.localizationUrl)
         initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty())
@@ -271,6 +276,17 @@ internal class VolvoxHubService {
         logIfEmpty(thirdPartyResponse.appsflyerDevKey.orEmpty(), ConfigureStrings.APPSFLYER_DEV_KEY_EMPTY)
         logIfEmpty(thirdPartyResponse.amplitudeApiKey.orEmpty(), ConfigureStrings.AMPLITUDE_API_KEY_EMPTY)
         logIfEmpty(thirdPartyResponse.appsflyerAppId.orEmpty(), ConfigureStrings.APPSFLYER_APP_ID_EMPTY)
+    }
+
+    /**
+     * Initialize the Facebook SDK
+     */
+    private fun initializeFacebook(appId: String, clientToken: String) {
+        if (appId.isEmpty()) return
+        FacebookSdk.setApplicationId(appId)
+        FacebookSdk.setClientToken(clientToken)
+        FacebookSdk.sdkInitialize(configuration.context.applicationContext)
+        AppEventsLogger.activateApp(configuration.context.applicationContext as Application)
     }
 
     /**
