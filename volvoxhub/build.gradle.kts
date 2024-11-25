@@ -130,7 +130,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.volvoxmobile.volvoxhub"
                 artifactId = "volvoxhub"
-                version = "0.0.2"
+                version = "0.0.3"
             }
         }
     }

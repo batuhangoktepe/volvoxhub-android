@@ -9,8 +9,7 @@
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.Hub">
+        android:supportsRtl="true">
 
         <activity
             android:name="com.facebook.FacebookActivity"
