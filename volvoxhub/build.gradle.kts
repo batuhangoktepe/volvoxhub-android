@@ -116,7 +116,7 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.firebaseBom))
-    implementation(libs.firebaseAnalytics)
+    implementation(libs.firebase.analytics)
 }
 
 kapt {

@@ -9,6 +9,7 @@ buildscript {
     dependencies {
         classpath(libs.hilt.android.gradle.plugin)
         classpath(libs.gradle)
+        classpath(libs.google.services)
     }
 }
 
@@ -19,4 +20,5 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.kapt) apply false
     alias(libs.plugins.mavenPublish) apply false
+    alias(libs.plugins.google.gms.google.services) apply false
 }

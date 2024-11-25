@@ -6,5 +6,5 @@ class Configuration(
     val context: Context,
     val appName: String,
     val appId: String,
-    val packageName: String,
+    val packageName: String
 )

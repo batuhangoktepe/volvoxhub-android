@@ -1,6 +1,6 @@
 [versions]
 agp = "8.5.2"
-googleServicesVersion = "4.4.2"
+googleServices = "4.4.2"
 gradle = "8.5.2"
 hiltAndroidGradlePlugin = "2.51.1"
 kotlin = "1.9.0"
@@ -31,13 +31,13 @@ appsflyer = "6.9.4"
 room = "2.6.1"
 fuel = "2.3.1"
 amplitude = "1.+"
-firebaseBom = "33.4.0"
-googleServices = "4.3.10"
+firebaseBom = "33.5.1"
 mavenPublish = "0.28.0"
+googleGmsGoogleServices = "4.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-google-services = { module = "com.google.gms:google-services", version.ref = "googleServicesVersion" }
+google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltAndroidGradlePlugin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -82,8 +82,7 @@ roomCompiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version = "0.0.8" }
 amplitude = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
 firebaseBom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebaseAnalytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
-
+firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx", version = "" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -92,3 +91,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }

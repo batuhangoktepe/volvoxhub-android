@@ -2,7 +2,6 @@ package com.volvoxmobile.volvoxhub
 
 import android.app.Application
 import android.content.Context
-import android.media.FaceDetector.Face
 import android.os.Build
 import androidx.room.Room
 import com.appsflyer.AppsFlyerLib
@@ -190,6 +189,7 @@ internal class VolvoxHubService {
             oneSignalToken = preferencesRepository.getPushToken(),
             oneSignalPlayerId = preferencesRepository.getOneSignalPlayerId(),
             filePath = configuration.context.filesDir.absolutePath,
+            appVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName,
         )
     }
 
@@ -241,15 +241,16 @@ internal class VolvoxHubService {
                 premiumStatus = response.device.premiumStatus,
                 forceUpdate = response.config.forceUpdate,
                 isRooted = rootCheck(),
+                remoteConfig = response.remoteConfig
             )
 
         initializeFirebase()
-        initializeFacebook(response.thirdParty.facebookAppId.orEmpty(), response.thirdParty.facebookClientToken.orEmpty())
+        initializeFacebook(response.thirdParty.facebookAppId.orEmpty(), response.thirdParty.facebookClientToken.orEmpty(), configuration.appName)
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
         handleLocalizations(response.config.localizationUrl)
-        initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty())
         initOneSignalSDK(response.thirdParty.oneSignalAppId.orEmpty())
         initAmplitudeSdk(response.thirdParty.amplitudeApiKey.orEmpty())
+        initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty())
         saveConfigUrls(response.config)
 
         hubInitListener.onInitCompleted(volvoxHubResponse)
@@ -281,10 +282,11 @@ internal class VolvoxHubService {
     /**
      * Initialize the Facebook SDK
      */
-    private fun initializeFacebook(appId: String, clientToken: String) {
+    private fun initializeFacebook(appId: String, clientToken: String, applicationName: String) {
         if (appId.isEmpty()) return
         FacebookSdk.setApplicationId(appId)
         FacebookSdk.setClientToken(clientToken)
+        FacebookSdk.setApplicationName(applicationName)
         FacebookSdk.sdkInitialize(configuration.context.applicationContext)
         AppEventsLogger.activateApp(configuration.context.applicationContext as Application)
     }
@@ -380,6 +382,7 @@ internal class VolvoxHubService {
      */
     private fun initializeFirebase() {
         FirebaseApp.initializeApp(configuration.context)
+        FirebaseAnalytics.getInstance(configuration.context).setAnalyticsCollectionEnabled(true)
         FirebaseAnalytics.getInstance(configuration.context).appInstanceId.addOnSuccessListener {
             tryOrLog {
                 preferencesRepository.saveFirebaseId(it.orEmpty())

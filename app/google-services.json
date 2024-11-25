@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "745784859284",
     "project_id": "volvox-hub",
-    "storage_bucket": "volvox-hub.appspot.com"
+    "storage_bucket": "volvox-hub.firebasestorage.app"
   },
   "client": [
     {
@@ -10,25 +10,6 @@
         "mobilesdk_app_id": "1:745784859284:android:1c484a250d15ac4aeff281",
         "android_client_info": {
           "package_name": "com.hub.example"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDOFvGbD-6PcizTZCR18deUEP5zj7CY6k0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:745784859284:android:d8256507419fbdbeeff281",
-        "android_client_info": {
-          "package_name": "com.volvox.hub"
         }
       },
       "oauth_client": [],

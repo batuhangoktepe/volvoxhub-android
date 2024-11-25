@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kapt)
     id("dagger.hilt.android.plugin")
     id("maven-publish")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -79,6 +80,9 @@ dependencies {
     kapt(libs.hilt.compiler)
     kapt(libs.dagger.compiler)
     implementation(libs.hilt)
+
+    // Gson
+    implementation(libs.gson)
 }
 
 kapt {
