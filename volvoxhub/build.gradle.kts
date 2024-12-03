@@ -74,10 +74,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.retrofitConverterGson)
 
-    // Network Interceptor
-    debugImplementation(libs.chucker)
-    releaseImplementation(libs.chuckerNoOp)
-
     // Kotlin Result
     implementation(libs.kotlinResult)
 
@@ -130,7 +126,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.volvoxmobile.volvoxhub"
                 artifactId = "volvoxhub"
-                version = "0.0.3"
+                version = "0.0.4"
             }
         }
     }
