@@ -132,7 +132,7 @@ internal class VolvoxHubService {
     private val retrofit: Retrofit by lazy {
         Retrofit
             .Builder()
-            .baseUrl(BaseUrlDecider.getApiBaseUrl())
+            .baseUrl(BaseUrlDecider.getApiBaseUrl(configuration.environment))
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(Gson()))
             .build()
