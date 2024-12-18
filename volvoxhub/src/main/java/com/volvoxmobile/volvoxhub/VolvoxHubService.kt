@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import androidx.room.Room
 import com.appsflyer.AppsFlyerLib
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.github.kittinunf.fuel.Fuel
@@ -123,6 +124,7 @@ internal class VolvoxHubService {
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(hubApiHeaderInterceptor)
+            .addInterceptor(ChuckerInterceptor.Builder(configuration.context).build())
             .build()
     }
 

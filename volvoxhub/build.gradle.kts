@@ -113,6 +113,9 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebaseBom))
     implementation(libs.firebase.analytics)
+
+    // Chucker
+    implementation(libs.chucker)
 }
 
 kapt {
