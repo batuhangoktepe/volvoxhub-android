@@ -8,6 +8,7 @@ data class RegisterThirdPartyResponse(
     @SerializedName("appsflyer_app_id") val appsflyerAppId: String?,
     @SerializedName("one_signal_api_key") val oneSignalAppId: String?,
     @SerializedName("amplitude_api_key") val amplitudeApiKey: String?,
+    @SerializedName("amplitude_experiment_key") val amplitudeExperimentKey: String?,
     @SerializedName("facebook_app_id") val facebookAppId: String?,
     @SerializedName("facebook_client_token") val facebookClientToken: String?
 )

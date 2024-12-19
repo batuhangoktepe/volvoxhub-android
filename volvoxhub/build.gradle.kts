@@ -109,13 +109,11 @@ dependencies {
 
     // Amplitude
     implementation(libs.amplitude)
+    implementation(libs.amplitudeExperiment)
 
     // Firebase
     implementation(platform(libs.firebaseBom))
     implementation(libs.firebase.analytics)
-
-    // Chucker
-    implementation(libs.chucker)
 }
 
 kapt {

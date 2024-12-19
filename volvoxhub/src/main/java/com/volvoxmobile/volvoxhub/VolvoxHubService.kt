@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Build
 import androidx.room.Room
 import com.appsflyer.AppsFlyerLib
-import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.github.kittinunf.fuel.Fuel
@@ -25,6 +24,7 @@ import com.volvoxmobile.volvoxhub.common.extensions.getScreenResolution
 import com.volvoxmobile.volvoxhub.common.extensions.getUserRegion
 import com.volvoxmobile.volvoxhub.common.util.DeviceUuidFactory
 import com.volvoxmobile.volvoxhub.common.util.Localizations
+import com.volvoxmobile.volvoxhub.common.util.StringUtils
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.common.util.tryOrLog
 import com.volvoxmobile.volvoxhub.data.local.model.VolvoxHubResponse
@@ -124,7 +124,6 @@ internal class VolvoxHubService {
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(hubApiHeaderInterceptor)
-            .addInterceptor(ChuckerInterceptor.Builder(configuration.context).build())
             .build()
     }
 
@@ -249,7 +248,7 @@ internal class VolvoxHubService {
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
         handleLocalizations(response.config.localizationUrl)
         initOneSignalSDK(response.thirdParty.oneSignalAppId.orEmpty())
-        initAmplitudeSdk(response.thirdParty.amplitudeApiKey.orEmpty())
+        initAmplitudeSdk(apiKey = response.thirdParty.amplitudeApiKey.orEmpty(), experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty())
         initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty())
         saveConfigUrls(response.config)
 
@@ -370,9 +369,9 @@ internal class VolvoxHubService {
     /**
      * Initialize the Amplitude SDK
      */
-    private fun initAmplitudeSdk(apiKey: String) {
+    private fun initAmplitudeSdk(apiKey: String, experimentKey: String = StringUtils.EMPTY) {
         tryOrLog {
-            AmplitudeManager.initialize(configuration.context, apiKey = apiKey)
+            AmplitudeManager.initialize(configuration.context, apiKey = apiKey, experimentKey = experimentKey)
         }
     }
 

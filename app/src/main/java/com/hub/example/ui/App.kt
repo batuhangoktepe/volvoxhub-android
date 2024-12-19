@@ -16,7 +16,8 @@ class App : Application() {
                 context = this,
                 appName = "YOUR_PROJECT_NAME",
                 appId = "YOUR_APP_ID",
-                packageName = packageName
+                packageName = packageName,
+                environment = ApiEnvironment.STAGE
             )
         VolvoxHub.initialize(volvoxHubConfiguration)
     }
