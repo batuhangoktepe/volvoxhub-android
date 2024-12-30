@@ -174,4 +174,17 @@ class VolvoxHub private constructor(
     ) {
         rcBillingHelper.restorePurchase(errorCallback, successCallback)
     }
+
+    /**
+     * Updates the application's localization by setting the language code and making a registration request.
+     * This function serves as an intermediary to trigger the localization update in the service layer.
+     *
+     * @param languageCode The new language code to set.
+     * @param onComplete Callback to be invoked when the operation is completed successfully.
+     */
+    fun updateLocalizations(languageCode: String, onComplete: () -> Unit) {
+        volvoxHubService.updateLocalizations(languageCode) {
+            onComplete()
+        }
+    }
 }

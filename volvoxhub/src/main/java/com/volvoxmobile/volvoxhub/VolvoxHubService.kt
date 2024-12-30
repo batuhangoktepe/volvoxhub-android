@@ -175,7 +175,7 @@ internal class VolvoxHubService {
             deviceBrand = Build.BRAND,
             deviceModel = Build.MODEL,
             countryCode = locale.country,
-            languageCode = locale.language,
+            languageCode = configuration.languageCode,
             idfa = context.getAdvertisingId().orEmpty(),
             appsflyerId = preferencesRepository.getAppsFlyerUserId(),
             firebaseId = preferencesRepository.getFirebaseId(),
@@ -206,6 +206,24 @@ internal class VolvoxHubService {
                 updateRegisterRequest()
             } ?: run {
                 hubInitListener.onInitFailed(0)
+            }
+        }
+    }
+
+    /**
+     * Updates the application's localization by setting the language code and making a registration request.
+     *
+     * @param languageCode The new language code to set.
+     * @param onComplete Callback to be invoked when the operation is completed successfully.
+     */
+    fun updateLocalizations(languageCode: String, onComplete: () -> Unit) {
+        scope.launch {
+            configuration.languageCode = languageCode
+            val registerRequest = createRegisterRequest()
+            val result = hubApiRepository.register(registerRequest).get()
+            if (result != null) {
+                handleLocalizations(result.config.localizationUrl)
+                onComplete()
             }
         }
     }
