@@ -3,6 +3,7 @@ package com.volvoxmobile.volvoxhub.ui.web
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,18 +46,18 @@ fun WebScreen(
                     }
                 },
                 colors =
-                    TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        titleContentColor = Color.White,
-                    ),
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = Color.White,
+                ),
             )
         },
         content = {
             Column(
                 modifier =
-                    Modifier
-                        .padding(it)
-                        .fillMaxSize(),
+                Modifier
+                    .padding(it)
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -64,6 +65,9 @@ fun WebScreen(
             }
         },
     )
+    BackHandler {
+        onClose()
+    }
 }
 
 @Composable
