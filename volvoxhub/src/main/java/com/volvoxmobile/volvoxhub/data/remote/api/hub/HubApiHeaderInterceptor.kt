@@ -8,6 +8,7 @@ import okhttp3.Response
 class HubApiHeaderInterceptor(
     private val context: Context,
     private val appId: String,
+    private val appName: String
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -16,7 +17,7 @@ class HubApiHeaderInterceptor(
         val modifiedRequest =
             requestBuilder
                 .addHeader(HEADER_HUB_ID, appId)
-                .addHeader(HEADER_HUB_DEVICE_ID, DeviceUuidFactory.create(context))
+                .addHeader(HEADER_HUB_DEVICE_ID, DeviceUuidFactory.create(context = context, appName = appName))
                 .build()
 
         return chain.proceed(modifiedRequest)

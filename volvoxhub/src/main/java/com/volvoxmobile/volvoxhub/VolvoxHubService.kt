@@ -112,7 +112,7 @@ internal class VolvoxHubService {
      * Interceptor to add headers (like auth tokens) to API requests
      */
     private val hubApiHeaderInterceptor: HubApiHeaderInterceptor by lazy {
-        HubApiHeaderInterceptor(context = configuration.context, appId = configuration.appId)
+        HubApiHeaderInterceptor(context = configuration.context, appId = configuration.appId, appName = configuration.appName)
     }
 
     /**
@@ -316,7 +316,7 @@ internal class VolvoxHubService {
         VolvoxHub.getInstance().rcBillingHelper.init(
             context = configuration.context,
             rcKey = rcKey,
-            uuid = DeviceUuidFactory.create(configuration.context),
+            uuid = DeviceUuidFactory.create(configuration.context, configuration.appName),
         )
     }
 
@@ -340,7 +340,7 @@ internal class VolvoxHubService {
     private fun initAppsflyerSdk(appsflyerDevKey: String) {
         AppsFlyerLib.getInstance().init(appsflyerDevKey, null, configuration.context)
         AppsFlyerLib.getInstance().setAppId(configuration.packageName)
-        AppsFlyerLib.getInstance().setCustomerUserId(DeviceUuidFactory.create(configuration.context))
+        AppsFlyerLib.getInstance().setCustomerUserId(DeviceUuidFactory.create(configuration.context, configuration.appName))
         AppsFlyerLib.getInstance().waitForCustomerUserId(true)
         AppsFlyerLib.getInstance().start(configuration.context)
         checkRequestChanges()
@@ -389,7 +389,7 @@ internal class VolvoxHubService {
      */
     private fun initAmplitudeSdk(apiKey: String, experimentKey: String = StringUtils.EMPTY) {
         tryOrLog {
-            AmplitudeManager.initialize(configuration.context, apiKey = apiKey, experimentKey = experimentKey)
+            AmplitudeManager.initialize(configuration.context, apiKey = apiKey, experimentKey = experimentKey, appName = configuration.appName)
         }
     }
 
