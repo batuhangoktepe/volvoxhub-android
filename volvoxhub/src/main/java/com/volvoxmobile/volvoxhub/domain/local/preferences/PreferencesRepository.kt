@@ -32,4 +32,8 @@ interface PreferencesRepository {
     fun setTermsOfServiceUrl(url: String?)
 
     fun getTermsOfServiceUrl(): String
+
+    fun saveVID(vId: String)
+
+    fun getVID(): String
 }

@@ -9,6 +9,8 @@ import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -32,8 +34,10 @@ import com.volvoxmobile.volvoxhub.data.local.model.db.LocalizationEntity
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiHeaderInterceptor
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiService
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.db.AppDatabase
 import com.volvoxmobile.volvoxhub.domain.local.localization.LocalizationRepositoryImpl
 import com.volvoxmobile.volvoxhub.domain.local.preferences.PreferencesRepositoryImpl
@@ -112,7 +116,12 @@ internal class VolvoxHubService {
      * Interceptor to add headers (like auth tokens) to API requests
      */
     private val hubApiHeaderInterceptor: HubApiHeaderInterceptor by lazy {
-        HubApiHeaderInterceptor(context = configuration.context, appId = configuration.appId, appName = configuration.appName)
+        HubApiHeaderInterceptor(
+            context = configuration.context,
+            appId = configuration.appId,
+            appName = configuration.appName,
+            vIdProvider = { preferencesRepository.getVID() }
+        )
     }
 
     /**
@@ -261,6 +270,7 @@ internal class VolvoxHubService {
                 remoteConfig = response.remoteConfig
             )
 
+        saveVID(response.vid)
         initializeFirebase()
         initializeFacebook(response.thirdParty.facebookAppId.orEmpty(), response.thirdParty.facebookClientToken.orEmpty(), configuration.appName)
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
@@ -269,7 +279,6 @@ internal class VolvoxHubService {
         initAmplitudeSdk(apiKey = response.thirdParty.amplitudeApiKey.orEmpty(), experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty())
         initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty())
         saveConfigUrls(response.config)
-
         hubInitListener.onInitCompleted(volvoxHubResponse)
     }
 
@@ -385,6 +394,13 @@ internal class VolvoxHubService {
     }
 
     /**
+     * Save Volvox Hub Id to the shared preferences
+     */
+    private fun saveVID(vId: String) {
+        preferencesRepository.saveVID(vId)
+    }
+
+    /**
      * Initialize the Amplitude SDK
      */
     private fun initAmplitudeSdk(apiKey: String, experimentKey: String = StringUtils.EMPTY) {
@@ -455,4 +471,38 @@ internal class VolvoxHubService {
      * Get the terms of service url
      */
     fun getTermsOfServiceUrl(): String = preferencesRepository.getTermsOfServiceUrl()
+
+
+    /**
+     * Send Claim Reward Request
+     * @param onComplete Callback to be invoked when the operation is completed successfully.
+     */
+    fun claimReward(onComplete: (ClaimRewardResponse) -> Unit, onError: (String) -> Unit) {
+        scope.launch {
+            when(val result = hubApiRepository.claimReward()) {
+                is Ok -> onComplete(result.value)
+                is Err -> onError(result.error.message.orEmpty())
+            }
+        }
+    }
+
+    /**
+     * Asynchronously fetches the reward status from the repository and provides the result
+     * via a callback function.
+     *
+     * This function uses a coroutine to perform a network request or database operation
+     * in a non-blocking manner. Once the operation is complete, it calls the provided
+     * callback with the result if it's not null.
+     *
+     * @param onComplete A lambda function that receives the result of the reward status
+     *                   operation as a `RewardStatusResponse`.
+     */
+    fun rewardStatus(onComplete: (RewardStatusResponse) -> Unit) {
+        scope.launch {
+            val result = hubApiRepository.rewardStatus()
+            hubApiRepository.rewardStatus().get()?.let {
+                onComplete(it)
+            }
+        }
+    }
 }

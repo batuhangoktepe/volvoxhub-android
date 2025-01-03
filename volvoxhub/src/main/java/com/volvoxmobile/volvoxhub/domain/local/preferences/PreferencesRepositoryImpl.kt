@@ -82,6 +82,15 @@ class PreferencesRepositoryImpl(
 
     override fun getTermsOfServiceUrl(): String = sharedPreferences.getStringOrEmpty(TERMS_OF_SERVICE_URL)
 
+    override fun saveVID(vId: String) {
+        with(sharedPreferencesEditor) {
+            putString(V_ID, vId)
+            commit()
+        }
+    }
+
+    override fun getVID(): String = sharedPreferences.getStringOrEmpty(V_ID)
+
     companion object {
         private const val ADVERTISING_ID = "advertising_id"
         private const val PUSH_TOKEN = "push_token"
@@ -91,5 +100,6 @@ class PreferencesRepositoryImpl(
         private const val INITIALIZE_SUCCEEDED = "initialize_succeeded"
         private const val PRIVACY_POLICY_URL = "privacy_policy_url"
         private const val TERMS_OF_SERVICE_URL = "terms_of_service_url"
+        private const val V_ID = "v_id"
     }
 }

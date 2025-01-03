@@ -14,6 +14,8 @@ import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopupConfig
@@ -186,5 +188,24 @@ class VolvoxHub private constructor(
         volvoxHubService.updateLocalizations(languageCode) {
             onComplete()
         }
+    }
+
+    /**
+     * Claims a reward using the volvoxHubService and triggers a callback with the response.
+     *
+     * @param onComplete A callback function that is invoked with the response of the reward claim.
+     *                   The response is provided as a `ClaimRewardResponse` object.
+     */
+    fun claimReward(onComplete: (ClaimRewardResponse) -> Unit, onError: (String) -> Unit) {
+        volvoxHubService.claimReward(onComplete = onComplete, onError = onError)
+    }
+
+    /**
+     * Fetches the reward status and invokes the callback with the result.
+     *
+     * @param onComplete A callback to handle the `RewardStatusResponse`.
+     */
+    fun rewardStatus(onComplete: (RewardStatusResponse) -> Unit) {
+        volvoxHubService.rewardStatus(onComplete)
     }
 }
