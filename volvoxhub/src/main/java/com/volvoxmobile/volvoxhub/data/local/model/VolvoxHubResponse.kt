@@ -7,5 +7,6 @@ data class VolvoxHubResponse(
     val premiumStatus: Boolean,
     val forceUpdate: Boolean,
     val isRooted: Boolean,
-    val remoteConfig: JsonObject?
+    val remoteConfig: JsonObject?,
+    val vId: String
 )

@@ -267,7 +267,8 @@ internal class VolvoxHubService {
                 premiumStatus = response.device.premiumStatus,
                 forceUpdate = response.config.forceUpdate,
                 isRooted = rootCheck(),
-                remoteConfig = response.remoteConfig
+                remoteConfig = response.remoteConfig,
+                vId = response.vid
             )
 
         saveVID(response.vid)
