@@ -2,6 +2,7 @@ package com.volvoxmobile.volvoxhub.domain.local.preferences
 
 import android.content.SharedPreferences
 import com.volvoxmobile.volvoxhub.common.extensions.getStringOrEmpty
+import com.volvoxmobile.volvoxhub.common.extensions.getStringOrNull
 
 class PreferencesRepositoryImpl(
     private val sharedPreferences: SharedPreferences,
@@ -91,6 +92,25 @@ class PreferencesRepositoryImpl(
 
     override fun getVID(): String = sharedPreferences.getStringOrEmpty(V_ID)
 
+    override fun saveSupportEmail(supportEmail: String?) {
+        with(sharedPreferencesEditor) {
+            putString(SUPPORT_EMAIL, supportEmail)
+            commit()
+        }
+    }
+
+    override fun getSupportedLanguages(): List<String> =
+        sharedPreferences.getStringSet(SUPPORTED_LANGUAGES, emptySet())?.toList() ?: emptyList()
+
+    override fun saveSupportedLanguages(languages: List<String>?) {
+        with(sharedPreferencesEditor) {
+            putStringSet(SUPPORTED_LANGUAGES, languages?.toSet() ?: emptySet())
+            apply()
+        }
+    }
+
+    override fun getSupportEmail(): String? = sharedPreferences.getStringOrNull(SUPPORT_EMAIL)
+
     companion object {
         private const val ADVERTISING_ID = "advertising_id"
         private const val PUSH_TOKEN = "push_token"
@@ -101,5 +121,7 @@ class PreferencesRepositoryImpl(
         private const val PRIVACY_POLICY_URL = "privacy_policy_url"
         private const val TERMS_OF_SERVICE_URL = "terms_of_service_url"
         private const val V_ID = "v_id"
+        private const val SUPPORT_EMAIL = "support_email"
+        private const val SUPPORTED_LANGUAGES = "supported_languages"
     }
 }

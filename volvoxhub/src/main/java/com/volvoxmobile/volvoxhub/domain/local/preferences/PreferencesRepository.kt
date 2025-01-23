@@ -36,4 +36,12 @@ interface PreferencesRepository {
     fun saveVID(vId: String)
 
     fun getVID(): String
+
+    fun saveSupportEmail(supportEmail: String?)
+
+    fun getSupportEmail(): String?
+
+    fun saveSupportedLanguages(languages: List<String>?)
+
+    fun getSupportedLanguages(): List<String>?
 }

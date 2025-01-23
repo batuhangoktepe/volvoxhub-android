@@ -31,6 +31,7 @@ fun WebScreen(
     url: String,
     title: String,
     onClose: () -> Unit,
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Scaffold(
         topBar = {
@@ -45,9 +46,8 @@ fun WebScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon", tint = Color.White)
                     }
                 },
-                colors =
-                TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = backgroundColor,
                     titleContentColor = Color.White,
                 ),
             )
@@ -92,5 +92,10 @@ fun WebViewContent(url: String) {
 @Preview(showBackground = true)
 @Composable
 fun WebScreenPreview() {
-    WebScreen(url = "https://www.google.com", title = "Google", onClose = {})
+    WebScreen(
+        url = "https://www.google.com", 
+        title = "Google", 
+        onClose = {},
+        backgroundColor = MaterialTheme.colorScheme.primary
+    )
 }

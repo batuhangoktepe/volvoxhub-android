@@ -272,6 +272,8 @@ internal class VolvoxHubService {
             )
 
         saveVID(response.vid)
+        saveSupportedLanguages(response.config.supportedLanguages)
+        saveSupportEmail(response.config.supportEmail.orEmpty())
         initializeFirebase()
         initializeFacebook(response.thirdParty.facebookAppId.orEmpty(), response.thirdParty.facebookClientToken.orEmpty(), configuration.appName)
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
@@ -402,6 +404,17 @@ internal class VolvoxHubService {
     }
 
     /**
+     * Save Supported Languages to the shared preferences
+     */
+    private fun saveSupportedLanguages(languages: List<String>?) {
+        preferencesRepository.saveSupportedLanguages(languages)
+    }
+
+    private fun saveSupportEmail(supportEmail: String) {
+        preferencesRepository.saveSupportEmail(supportEmail)
+    }
+
+    /**
      * Initialize the Amplitude SDK
      */
     private fun initAmplitudeSdk(apiKey: String, experimentKey: String = StringUtils.EMPTY) {
@@ -472,6 +485,16 @@ internal class VolvoxHubService {
      * Get the terms of service url
      */
     fun getTermsOfServiceUrl(): String = preferencesRepository.getTermsOfServiceUrl()
+
+    /**
+     * Get the contact us email
+     */
+    fun getSupportEmail(): String? = preferencesRepository.getSupportEmail()
+
+    /**
+     * Get the supported languages list
+     */
+    fun getSupportedLanguages(): List<String> = preferencesRepository.getSupportedLanguages()
 
 
     /**

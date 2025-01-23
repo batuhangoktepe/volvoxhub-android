@@ -1,8 +1,16 @@
 package com.volvoxmobile.volvoxhub
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.models.StoreProduct
@@ -74,33 +82,43 @@ class VolvoxHub private constructor(
             url: String,
             title: String,
             onClose: () -> Unit,
+            backgroundColor: Color = MaterialTheme.colorScheme.primary,
         ) {
-            WebScreen(url = url, title, onClose = onClose)
+            WebScreen(
+                url = url, 
+                title = title, 
+                onClose = onClose,
+                backgroundColor = backgroundColor
+            )
         }
 
         @Composable
         fun ShowPrivacyPolicyScreen(
             context: Context,
-            onClose: () -> Unit,
+            backgroundColor: Color = MaterialTheme.colorScheme.primary,
+            onClose: () -> Unit
         ) {
             val privacyPolicyUrl = VolvoxHubService.instance.getPrivacyPolicyUrl()
             WebScreen(
                 url = privacyPolicyUrl,
-                Localizations.get(context, "Privacy Policy"),
-                onClose = onClose
+                title = Localizations.get(context, "Privacy Policy"),
+                onClose = onClose,
+                backgroundColor = backgroundColor
             )
         }
 
         @Composable
         fun ShowTermsOfServiceScreen(
             context: Context,
+            backgroundColor: Color = MaterialTheme.colorScheme.primary,
             onClose: () -> Unit,
         ) {
             val termsOfServiceUrl = VolvoxHubService.instance.getTermsOfServiceUrl()
             WebScreen(
                 url = termsOfServiceUrl,
-                Localizations.get(context, "Terms of Service"),
-                onClose = onClose
+                title = Localizations.get(context, "Terms of Service"),
+                onClose = onClose,
+                backgroundColor = backgroundColor
             )
         }
 
@@ -208,4 +226,51 @@ class VolvoxHub private constructor(
     fun rewardStatus(onComplete: (RewardStatusResponse) -> Unit) {
         volvoxHubService.rewardStatus(onComplete)
     }
+
+    /**
+     * Launches the default email client to send an email.
+     *
+     * This function uses an implicit intent with the `mailto:` URI scheme to open the default email app installed
+     * on the device. It takes the recipient's email address, subject, and body content as parameters and
+     * ensures that the recipient's email address is valid.
+     *
+     * @param context The context required to start the activity.
+     * @param subject The subject of the email. Optional, can be empty.
+     * @param body The body content of the email. Optional, can be empty.
+     *
+     * Note: The recipient email is retrieved using `volvoxHubService.getSupportEmail()`. Ensure the service
+     * provides a valid email address. If the address is invalid, the user will be notified via a `Toast` message.
+     *
+     * Usage Example:
+     * ```kotlin
+     * sendEmail(context, "Support Request", "I need help with the app.")
+     * ```
+     */
+    fun sendEmail(context: Context, subject: String = "", body: String = "") {
+        val recipientEmail = volvoxHubService.getSupportEmail().orEmpty()
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(recipientEmail).matches()) {
+            return
+        }
+
+        val emailUri = Uri.parse("mailto:").buildUpon().apply {
+            appendQueryParameter("to", recipientEmail)
+            appendQueryParameter("subject", subject)
+            appendQueryParameter("body", body)
+        }.build()
+
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = emailUri
+        }
+
+        try {
+            context.startActivity(emailIntent)
+        } catch (_: ActivityNotFoundException) {
+        }
+    }
+
+    /**
+     * Get supported languages list
+     */
+    fun getSupportedLanguages(): List<String> = volvoxHubService.getSupportedLanguages()
 }

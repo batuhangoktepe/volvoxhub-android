@@ -8,4 +8,6 @@ data class RegisterConfigResponse(
     @SerializedName("localization_url") val localizationUrl: String,
     @SerializedName("privacy_policy_url") val privacyPolicyUrl: String,
     @SerializedName("tos_url") val eula: String,
+    @SerializedName("support_email") val supportEmail: String?,
+    @SerializedName("supported_languages") val supportedLanguages: List<String>?
 )
