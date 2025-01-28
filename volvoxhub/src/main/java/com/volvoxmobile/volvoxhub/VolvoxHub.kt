@@ -83,12 +83,14 @@ class VolvoxHub private constructor(
             title: String,
             onClose: () -> Unit,
             backgroundColor: Color = MaterialTheme.colorScheme.primary,
+            contentColor: Color = Color.White,
         ) {
             WebScreen(
                 url = url, 
                 title = title, 
                 onClose = onClose,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                contentColor = contentColor
             )
         }
 
@@ -96,6 +98,7 @@ class VolvoxHub private constructor(
         fun ShowPrivacyPolicyScreen(
             context: Context,
             backgroundColor: Color = MaterialTheme.colorScheme.primary,
+            contentColor: Color = Color.White,
             onClose: () -> Unit
         ) {
             val privacyPolicyUrl = VolvoxHubService.instance.getPrivacyPolicyUrl()
@@ -103,7 +106,8 @@ class VolvoxHub private constructor(
                 url = privacyPolicyUrl,
                 title = Localizations.get(context, "Privacy Policy"),
                 onClose = onClose,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                contentColor = contentColor
             )
         }
 
@@ -111,14 +115,16 @@ class VolvoxHub private constructor(
         fun ShowTermsOfServiceScreen(
             context: Context,
             backgroundColor: Color = MaterialTheme.colorScheme.primary,
-            onClose: () -> Unit,
+            contentColor: Color = Color.White,
+            onClose: () -> Unit
         ) {
             val termsOfServiceUrl = VolvoxHubService.instance.getTermsOfServiceUrl()
             WebScreen(
                 url = termsOfServiceUrl,
                 title = Localizations.get(context, "Terms of Service"),
                 onClose = onClose,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                contentColor = contentColor
             )
         }
 

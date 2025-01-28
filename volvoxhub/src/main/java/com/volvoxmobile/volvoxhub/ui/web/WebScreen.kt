@@ -32,6 +32,7 @@ fun WebScreen(
     title: String,
     onClose: () -> Unit,
     backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = Color.White,
 ) {
     Scaffold(
         topBar = {
@@ -43,12 +44,16 @@ fun WebScreen(
                     IconButton(onClick = {
                         onClose()
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon", tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            "backIcon", 
+                            tint = contentColor
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = backgroundColor,
-                    titleContentColor = Color.White,
+                    titleContentColor = contentColor,
                 ),
             )
         },
