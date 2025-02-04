@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.revenuecat.purchases.CustomerInfo
+import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.PurchasesError
+import com.revenuecat.purchases.interfaces.ReceiveCustomerInfoCallback
 import com.revenuecat.purchases.models.StoreProduct
 import com.revenuecat.purchases.models.StoreTransaction
 import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
@@ -279,4 +281,23 @@ class VolvoxHub private constructor(
      * Get supported languages list
      */
     fun getSupportedLanguages(): List<String> = volvoxHubService.getSupportedLanguages()
+
+    /**
+     * Revenuecat Trial Check
+     */
+    fun checkIfUserUsedTrialForPackage(packageId: String, onResult: (Boolean) -> Unit) {
+        Purchases.sharedInstance.getCustomerInfo(object : ReceiveCustomerInfoCallback {
+            override fun onReceived(customerInfo: CustomerInfo) {
+                val hasUsedTrial = customerInfo.entitlements.all.any { (_, entitlement) ->
+                    entitlement.productIdentifier == packageId && entitlement.periodType == com.revenuecat.purchases.PeriodType.TRIAL
+                }
+                onResult(hasUsedTrial)
+            }
+
+            override fun onError(error: PurchasesError) {
+                // Hata olursa false döndür (log eklenebilir)
+                onResult(false)
+            }
+        })
+    }
 }
