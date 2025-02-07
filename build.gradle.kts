@@ -21,4 +21,6 @@ plugins {
     alias(libs.plugins.kapt) apply false
     alias(libs.plugins.mavenPublish) apply false
     alias(libs.plugins.google.gms.google.services) apply false
+    alias(libs.plugins.firebase.crashlytics) apply false
+
 }

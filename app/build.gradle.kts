@@ -5,6 +5,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("maven-publish")
     alias(libs.plugins.google.gms.google.services)
+    id("com.google.firebase.crashlytics")
 }
 
 android {
