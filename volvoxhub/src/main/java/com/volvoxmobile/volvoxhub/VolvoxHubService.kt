@@ -2,8 +2,11 @@ package com.volvoxmobile.volvoxhub
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.room.Room
+import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
@@ -15,6 +18,7 @@ import com.github.michaelbull.result.get
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.onesignal.OneSignal
 import com.scottyab.rootbeer.RootBeer
@@ -33,6 +37,7 @@ import com.volvoxmobile.volvoxhub.data.local.model.VolvoxHubResponse
 import com.volvoxmobile.volvoxhub.data.local.model.db.LocalizationEntity
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiHeaderInterceptor
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiService
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.InstalledApps
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
@@ -198,8 +203,33 @@ internal class VolvoxHubService {
             oneSignalPlayerId = preferencesRepository.getOneSignalPlayerId(),
             filePath = configuration.context.filesDir.absolutePath,
             appVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName,
+            installedApps = getInstalledApps(context)
         )
     }
+
+    /**
+     * Create Installed Apps Response
+     */
+    private fun getInstalledApps(context: Context): InstalledApps {
+        val packageManager = context.packageManager
+
+        fun isAppInstalled(packageName: String): Boolean {
+            return try {
+                packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
+        }
+
+        return InstalledApps(
+            instagram = isAppInstalled("com.instagram.android"),
+            facebook = isAppInstalled("com.facebook.katana"),
+            tiktok = isAppInstalled("com.zhiliaoapp.musically"),
+            snapchat = isAppInstalled("com.snapchat.android")
+        )
+    }
+
 
     /**
      * Start the service with the hub init listener, It makes a register request to the hub
@@ -350,13 +380,56 @@ internal class VolvoxHubService {
      * Initialize the AppsFlyer SDK
      */
     private fun initAppsflyerSdk(appsflyerDevKey: String) {
-        AppsFlyerLib.getInstance().init(appsflyerDevKey, null, configuration.context)
+        AppsFlyerLib.getInstance().init(appsflyerDevKey, object : AppsFlyerConversionListener {
+            override fun onConversionDataSuccess(conversionData: MutableMap<String, Any>?) {
+                scope.launch {
+                    conversionData?.let { data ->
+                        val jsonObject = JsonObject()
+                        // Iterate through all conversion data and add to JsonObject
+                        data.forEach { (key, value) ->
+                            when (value) {
+                                is String -> jsonObject.addProperty(key, value)
+                                is Number -> jsonObject.addProperty(key, value)
+                                is Boolean -> jsonObject.addProperty(key, value)
+                                else -> jsonObject.addProperty(key, value.toString())
+                            }
+                        }
+                        // Send conversion data to backend
+                        hubApiRepository.updateConversion(jsonObject)
+                    }
+                }
+            }
+
+            override fun onConversionDataFail(error: String?) {
+                VolvoxHubLogManager.log(
+                    message = "AppsFlyer Conversion Data Failed: $error",
+                    level = VolvoxHubLogLevel.ERROR
+                )
+            }
+
+            override fun onAppOpenAttribution(attributionData: MutableMap<String, String>?) {
+                // Not needed for this implementation
+            }
+
+            override fun onAttributionFailure(error: String?) {
+                // Not needed for this implementation
+            }
+        }, configuration.context)
         AppsFlyerLib.getInstance().setAppId(configuration.packageName)
         AppsFlyerLib.getInstance().setCustomerUserId(DeviceUuidFactory.create(configuration.context, configuration.appName))
         AppsFlyerLib.getInstance().waitForCustomerUserId(true)
         AppsFlyerLib.getInstance().start(configuration.context)
+        triggerForegroundManually(configuration.context)
+
         checkRequestChanges()
         preferencesRepository.setAppsFlyerUserId(AppsFlyerLib.getInstance().getAppsFlyerUID(configuration.context).orEmpty())
+    }
+
+    // TODO refactor
+    private fun triggerForegroundManually(context: Context) {
+        val intent = Intent(context, DummyActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
     /**
