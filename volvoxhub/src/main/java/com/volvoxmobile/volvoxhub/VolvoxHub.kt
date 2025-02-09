@@ -286,13 +286,12 @@ class VolvoxHub private constructor(
         Purchases.sharedInstance.getCustomerInfo(object : ReceiveCustomerInfoCallback {
             override fun onReceived(customerInfo: CustomerInfo) {
                 val hasUsedTrial = customerInfo.entitlements.all.any { (_, entitlement) ->
-                    entitlement.productIdentifier == packageId && entitlement.periodType == com.revenuecat.purchases.PeriodType.TRIAL
+                    entitlement.productIdentifier == packageId
                 }
                 onResult(hasUsedTrial)
             }
 
             override fun onError(error: PurchasesError) {
-                // Hata olursa false döndür (log eklenebilir)
                 onResult(false)
             }
         })
