@@ -9,11 +9,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.revenuecat.purchases.CustomerInfo
-import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.PurchasesError
-import com.revenuecat.purchases.interfaces.ReceiveCustomerInfoCallback
 import com.revenuecat.purchases.models.StoreProduct
 import com.revenuecat.purchases.models.StoreTransaction
+import com.revenuecat.purchases.models.googleProduct
 import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
 import com.revenuecat.purchases.ui.revenuecatui.PaywallDialog
 import com.revenuecat.purchases.ui.revenuecatui.PaywallDialogOptions
@@ -282,18 +281,12 @@ class VolvoxHub private constructor(
     /**
      * Revenuecat Trial Check
      */
-    fun checkIfUserUsedTrialForPackage(packageId: String, onResult: (Boolean) -> Unit) {
-        Purchases.sharedInstance.getCustomerInfo(object : ReceiveCustomerInfoCallback {
-            override fun onReceived(customerInfo: CustomerInfo) {
-                val hasUsedTrial = customerInfo.entitlements.all.any { (_, entitlement) ->
-                    entitlement.productIdentifier == packageId
-                }
-                onResult(hasUsedTrial)
+    private fun checkIfUserUsedTrialForPackage(product: StoreProduct): Boolean {
+        val trialCheck = product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
+            offer.pricingPhases.pricingPhaseList.any() { phase ->
+                phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
             }
-
-            override fun onError(error: PurchasesError) {
-                onResult(false)
-            }
-        })
+        } ?: false
+        return trialCheck.not()
     }
 }
