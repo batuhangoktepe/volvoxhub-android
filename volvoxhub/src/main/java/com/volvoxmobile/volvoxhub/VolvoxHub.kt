@@ -281,7 +281,7 @@ class VolvoxHub private constructor(
     /**
      * Revenuecat Trial Check
      */
-    private fun checkIfUserUsedTrialForPackage(product: StoreProduct): Boolean {
+    fun checkIfUserUsedTrialForPackage(product: StoreProduct): Boolean {
         val trialCheck = product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
             offer.pricingPhases.pricingPhaseList.any() { phase ->
                 phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
