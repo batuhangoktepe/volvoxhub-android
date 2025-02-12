@@ -40,28 +40,13 @@ object AmplitudeManager {
         amplitude.setUserId(DeviceUuidFactory.create(context = context, appName = appName))
 
         if (experimentKey.isEmpty()) return
-        val application = getApplication() ?: return
         experimentClient = Experiment.initializeWithAmplitudeAnalytics(
-            application,
+            context.applicationContext as Application,
             experimentKey,
             ExperimentConfig()
         )
         setExperiment()
     }
-
-    private fun getApplication(): Application? {
-        return try {
-            val activityThreadClass = Class.forName("android.app.ActivityThread")
-            val currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread")
-            val activityThread = currentActivityThreadMethod.invoke(null)
-            val getApplicationMethod = activityThreadClass.getMethod("getApplication")
-            getApplicationMethod.invoke(activityThread) as? Application
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
 
     fun logEvent(
         eventName: String,

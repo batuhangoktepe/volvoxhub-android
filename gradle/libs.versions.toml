@@ -29,8 +29,8 @@ oneSignal = "[4.0.0, 4.99.99]"
 appsflyer = "6.9.4"
 room = "2.6.1"
 fuel = "2.3.1"
-amplitude = "1.+"
-amplitudeExperiment = "1.+"
+amplitude = "1.20.0"
+amplitudeExperiment = "1.13.0"
 firebaseBom = "33.5.1"
 mavenPublish = "0.28.0"
 googleGmsGoogleServices = "4.4.2"
@@ -80,7 +80,7 @@ fuelGson = { module = "com.github.kittinunf.fuel:fuel-gson", version.ref = "fuel
 roomCompiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version = "0.0.8" }
 amplitude = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
-amplitudeExperiment = { module = "com.amplitude:experiment-android-client", version.ref = "amplitude" }
+amplitudeExperiment = { module = "com.amplitude:experiment-android-client", version.ref = "amplitudeExperiment" }
 firebaseBom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx", version = "" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "" }
