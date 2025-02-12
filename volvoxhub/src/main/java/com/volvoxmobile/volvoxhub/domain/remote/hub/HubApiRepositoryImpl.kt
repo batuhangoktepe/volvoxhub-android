@@ -9,6 +9,8 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseRes
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import okhttp3.ResponseBody
 import com.google.gson.JsonObject
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 
 class HubApiRepositoryImpl(
     private val hubApiService: HubApiService,
@@ -22,4 +24,6 @@ class HubApiRepositoryImpl(
 
     override suspend fun updateConversion(conversionData: JsonObject): GenericResult<ResponseBody> = 
         handleHubRequest { hubApiService.updateConversion(conversionData) }
+
+    override suspend fun usePromoCode(promoCodeRequest: PromoCodeRequest): GenericResult<PromoCodeResponse> = handleHubRequest { hubApiService.usePromoCode(promoCodeRequest) }
 }

@@ -23,5 +23,5 @@ data class RegisterRequest(
     @SerializedName("one_signal_player_id") val oneSignalPlayerId: String,
     @SerializedName("file_path") val filePath: String,
     @SerializedName("app_version") val appVersion: String,
-    @SerializedName("installed_apps") val installedApps: InstalledApps
+    @SerializedName("installed_apps") val installedAppsRequest: InstalledAppsRequest
 )

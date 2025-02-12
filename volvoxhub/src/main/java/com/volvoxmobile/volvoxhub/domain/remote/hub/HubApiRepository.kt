@@ -7,10 +7,13 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseRes
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import okhttp3.ResponseBody
 import com.google.gson.JsonObject
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 
 interface HubApiRepository {
     suspend fun register(registerRequest: RegisterRequest): GenericResult<RegisterBaseResponse>
     suspend fun claimReward(): GenericResult<ClaimRewardResponse>
     suspend fun rewardStatus(): GenericResult<RewardStatusResponse>
     suspend fun updateConversion(conversionData: JsonObject): GenericResult<ResponseBody>
+    suspend fun usePromoCode(promoCodeRequest: PromoCodeRequest): GenericResult<PromoCodeResponse>
 }

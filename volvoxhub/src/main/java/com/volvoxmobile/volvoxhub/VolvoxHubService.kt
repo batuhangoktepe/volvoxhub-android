@@ -37,9 +37,11 @@ import com.volvoxmobile.volvoxhub.data.local.model.VolvoxHubResponse
 import com.volvoxmobile.volvoxhub.data.local.model.db.LocalizationEntity
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiHeaderInterceptor
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiService
-import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.InstalledApps
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.InstalledAppsRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
@@ -203,14 +205,14 @@ internal class VolvoxHubService {
             oneSignalPlayerId = preferencesRepository.getOneSignalPlayerId(),
             filePath = configuration.context.filesDir.absolutePath,
             appVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName,
-            installedApps = getInstalledApps(context)
+            installedAppsRequest = getInstalledApps(context)
         )
     }
 
     /**
      * Create Installed Apps Response
      */
-    private fun getInstalledApps(context: Context): InstalledApps {
+    private fun getInstalledApps(context: Context): InstalledAppsRequest {
         val packageManager = context.packageManager
 
         fun isAppInstalled(packageName: String): Boolean {
@@ -222,7 +224,7 @@ internal class VolvoxHubService {
             }
         }
 
-        return InstalledApps(
+        return InstalledAppsRequest(
             instagram = isAppInstalled("com.instagram.android"),
             facebook = isAppInstalled("com.facebook.katana"),
             tiktok = isAppInstalled("com.zhiliaoapp.musically"),
@@ -596,9 +598,24 @@ internal class VolvoxHubService {
      */
     fun rewardStatus(onComplete: (RewardStatusResponse) -> Unit) {
         scope.launch {
-            val result = hubApiRepository.rewardStatus()
             hubApiRepository.rewardStatus().get()?.let {
                 onComplete(it)
+            }
+        }
+    }
+
+    /**
+     * Attempts to use a promo code.
+     * Calls `successCallback` on success with `PromoCodeResponse`,
+     * otherwise calls `errorCallback`.
+     */
+    fun usePromoCode(code: String, errorCallback: () -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+        scope.launch {
+            val promoCodeRequest = PromoCodeRequest(code)
+            hubApiRepository.usePromoCode(promoCodeRequest).get()?.let {
+                successCallback.invoke(it)
+            } ?: run {
+                errorCallback.invoke()
             }
         }
     }

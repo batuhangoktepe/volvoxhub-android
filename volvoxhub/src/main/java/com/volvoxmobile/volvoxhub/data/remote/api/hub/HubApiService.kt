@@ -5,6 +5,8 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResp
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.google.gson.JsonObject
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -24,4 +26,7 @@ interface HubApiService {
 
     @POST("device/conversion")
     suspend fun updateConversion(@Body conversionData: JsonObject): ResponseBody
+
+    @POST("promo-codes/use")
+    suspend fun usePromoCode(@Body promoCodeRequest: PromoCodeRequest): PromoCodeResponse
 }

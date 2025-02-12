@@ -8,14 +8,14 @@ import com.amplitude.android.events.Identify
 import com.amplitude.experiment.Experiment
 import com.amplitude.experiment.ExperimentClient
 import com.amplitude.experiment.ExperimentConfig
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.volvoxmobile.volvoxhub.common.util.DeviceUuidFactory
+import com.volvoxmobile.volvoxhub.common.util.StringUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.volvoxmobile.volvoxhub.common.util.StringUtils
 
 object AmplitudeManager {
     private lateinit var amplitude: Amplitude
@@ -40,13 +40,28 @@ object AmplitudeManager {
         amplitude.setUserId(DeviceUuidFactory.create(context = context, appName = appName))
 
         if (experimentKey.isEmpty()) return
+        val application = getApplication() ?: return
         experimentClient = Experiment.initializeWithAmplitudeAnalytics(
-            context.applicationContext as Application,
+            application,
             experimentKey,
             ExperimentConfig()
         )
         setExperiment()
     }
+
+    private fun getApplication(): Application? {
+        return try {
+            val activityThreadClass = Class.forName("android.app.ActivityThread")
+            val currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread")
+            val activityThread = currentActivityThreadMethod.invoke(null)
+            val getApplicationMethod = activityThreadClass.getMethod("getApplication")
+            getApplicationMethod.invoke(activityThread) as? Application
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 
     fun logEvent(
         eventName: String,

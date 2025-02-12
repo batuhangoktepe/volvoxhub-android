@@ -21,6 +21,7 @@ import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
@@ -232,6 +233,15 @@ class VolvoxHub private constructor(
     }
 
     /**
+     * Attempts to use a promo code.
+     * Calls `successCallback` on success with `PromoCodeResponse`,
+     * otherwise calls `errorCallback`.
+     */
+    fun usePromoCode(code: String, errorCallback: () -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+        volvoxHubService.usePromoCode(code, errorCallback, successCallback)
+    }
+
+        /**
      * Launches the default email client to send an email.
      *
      * This function uses an implicit intent with the `mailto:` URI scheme to open the default email app installed
