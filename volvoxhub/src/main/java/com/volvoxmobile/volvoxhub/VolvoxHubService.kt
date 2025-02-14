@@ -312,7 +312,7 @@ internal class VolvoxHubService {
         handleLocalizations(response.config.localizationUrl)
         initOneSignalSDK(response.thirdParty.oneSignalAppId.orEmpty())
         initAmplitudeSdk(apiKey = response.thirdParty.amplitudeApiKey.orEmpty(), experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty())
-        initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty())
+        initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty(), response.vid)
         saveConfigUrls(response.config)
         hubInitListener.onInitCompleted(volvoxHubResponse)
     }
@@ -355,12 +355,12 @@ internal class VolvoxHubService {
     /**
      * Initialize the RevenueCat billing helper
      */
-    private fun initializeRcBillingHelper(rcKey: String) {
+    private fun initializeRcBillingHelper(rcKey: String, vId: String) {
         if (rcKey.isEmpty()) return
         VolvoxHub.getInstance().rcBillingHelper.init(
             context = configuration.context,
             rcKey = rcKey,
-            uuid = DeviceUuidFactory.create(configuration.context, configuration.appName),
+            uuid = vId,
         )
     }
 
