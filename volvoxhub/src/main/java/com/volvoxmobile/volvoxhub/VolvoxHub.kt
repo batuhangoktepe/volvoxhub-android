@@ -237,7 +237,7 @@ class VolvoxHub private constructor(
      * Calls `successCallback` on success with `PromoCodeResponse`,
      * otherwise calls `errorCallback`.
      */
-    fun usePromoCode(code: String, errorCallback: () -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+    fun usePromoCode(code: String, errorCallback: (String?) -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
         volvoxHubService.usePromoCode(code, errorCallback, successCallback)
     }
 

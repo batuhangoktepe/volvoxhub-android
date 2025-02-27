@@ -609,13 +609,12 @@ internal class VolvoxHubService {
      * Calls `successCallback` on success with `PromoCodeResponse`,
      * otherwise calls `errorCallback`.
      */
-    fun usePromoCode(code: String, errorCallback: () -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+    fun usePromoCode(code: String, errorCallback: (String?) -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
         scope.launch {
             val promoCodeRequest = PromoCodeRequest(code)
-            hubApiRepository.usePromoCode(promoCodeRequest).get()?.let {
-                successCallback.invoke(it)
-            } ?: run {
-                errorCallback.invoke()
+            when(val result = hubApiRepository.usePromoCode(promoCodeRequest)){
+                is Ok -> successCallback.invoke(result.value)
+                is Err -> errorCallback.invoke(result.error.message)
             }
         }
     }
