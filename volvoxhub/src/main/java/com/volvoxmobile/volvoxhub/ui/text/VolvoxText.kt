@@ -33,33 +33,41 @@ fun VolvoxText(
 
     val uriHandler = LocalUriHandler.current
 
-    val linkColor = MaterialTheme.colorScheme.primary
+    var textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
 
-    val annotatedString = buildAnnotatedString {
-        append(parsedText)
-        parsedText.getStringAnnotations("URL", 0, parsedText.length).forEach { annotation ->
-            addStyle(
-                style = SpanStyle(
-                    color = linkColor,
-                    textDecoration = TextDecoration.Underline
-                ),
-                start = annotation.start,
-                end = annotation.end
-            )
+    val annotatedString = remember(parsedText) {
+        buildAnnotatedString {
 
-            // Add a LinkAnnotation that the Text composable understands
-            addStringAnnotation(
-                tag = "URL",
-                annotation = annotation.item,
-                start = annotation.start,
-                end = annotation.end
-            )
+            append(parsedText.text)
+            parsedText.spanStyles.forEach { spanStyle ->
+                addStyle(spanStyle.item, spanStyle.start, spanStyle.end)
+            }
+            parsedText.paragraphStyles.forEach { paragraphStyle ->
+                addStyle(paragraphStyle.item, paragraphStyle.start, paragraphStyle.end)
+            }
+
+            parsedText.getStringAnnotations("URL", 0, parsedText.length).forEach { annotation ->
+
+                addStyle(
+                    style = SpanStyle(
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    start = annotation.start,
+                    end = annotation.end
+                )
+
+                addStringAnnotation(
+                    tag = "URL",
+                    annotation = annotation.item,
+                    start = annotation.start,
+                    end = annotation.end
+                )
+            }
         }
     }
 
-    var textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
-
-    val clickableModifier = if (annotatedString.getStringAnnotations("URL", 0, annotatedString.length).isNotEmpty()) {
+    val hasLinks = annotatedString.getStringAnnotations("URL", 0, annotatedString.length).isNotEmpty()
+    val clickableModifier = if (hasLinks) {
         Modifier.pointerInput(Unit) {
             detectTapGestures { offset ->
                 val layoutResult = textLayoutResultState.value ?: return@detectTapGestures
