@@ -8,32 +8,29 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-data class HubColors(
+data class VolvoxHubColors(
     val topBarIconColor: Color = Color.Unspecified,
     val topBarTextColor: Color = Color.Unspecified,
     val topBarBackground: Color = Color.Unspecified,
+    val textColor: Color = Color.Unspecified,
+    val background: Color = Color.Unspecified,
+    val contactDescriptionColor: Color = Color.Unspecified,
+    val contactDateColor: Color = Color.Unspecified
 )
 
 val LocalHubColors = staticCompositionLocalOf {
-    HubColors()
+    VolvoxHubColors()
 }
 
 @Composable
-fun HubTheme(
+fun VolvoxHubTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    darkColors: VolvoxHubColors,
+    lightColors: VolvoxHubColors,
     content: @Composable () -> Unit
 ) {
-    val customColors = if (darkTheme)
-        HubColors(
-            topBarIconColor = Color.White,
-            topBarTextColor = Color.White,
-            topBarBackground = Color.Black,
-        )
-    else HubColors(
-        topBarIconColor = Color.Black,
-        topBarTextColor = Color.Black,
-        topBarBackground = Color.White,
-    )
+    val customColors = if (darkTheme) darkColors
+    else lightColors
 
     CompositionLocalProvider(
         LocalHubColors provides customColors,
@@ -41,8 +38,8 @@ fun HubTheme(
     )
 }
 
-object HubTheme {
-    val colors: HubColors
+object VolvoxHubTheme {
+    val colors: VolvoxHubColors
         @Composable
         get() = LocalHubColors.current
 }

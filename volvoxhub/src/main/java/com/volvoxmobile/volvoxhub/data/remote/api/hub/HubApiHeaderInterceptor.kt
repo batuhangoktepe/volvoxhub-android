@@ -16,13 +16,9 @@ class HubApiHeaderInterceptor(
         val requestBuilder = request.newBuilder()
 
         requestBuilder
-            .addHeader(HEADER_HUB_ID, appId)
-            .addHeader(HEADER_HUB_DEVICE_ID, DeviceUuidFactory.create(context = context, appName = appName))
-
-        val currentVId = vIdProvider()
-        if (currentVId.isNotEmpty()) {
-            requestBuilder.addHeader(HEADER_VID, currentVId)
-        }
+            .addHeader(HEADER_HUB_ID, "fec9e0c3-b781-4fa7-b04e-cc568d906e78")
+            .addHeader(HEADER_HUB_DEVICE_ID,"A4F33019E140499C949B0C8E1DB884E7")
+            .addHeader(HEADER_VID, "72e5a62c-29ef-4a24-af8f-0a9d6f0b2c40")
 
         val modifiedRequest = requestBuilder.build()
         return chain.proceed(modifiedRequest)

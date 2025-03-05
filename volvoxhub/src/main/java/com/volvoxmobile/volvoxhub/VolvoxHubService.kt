@@ -45,6 +45,8 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeRespon
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
 import com.volvoxmobile.volvoxhub.db.AppDatabase
 import com.volvoxmobile.volvoxhub.domain.local.localization.LocalizationRepositoryImpl
 import com.volvoxmobile.volvoxhub.domain.local.preferences.PreferencesRepositoryImpl
@@ -615,6 +617,24 @@ internal class VolvoxHubService {
             when(val result = hubApiRepository.usePromoCode(promoCodeRequest)){
                 is Ok -> successCallback.invoke(result.value)
                 is Err -> errorCallback.invoke(result.error.message)
+            }
+        }
+    }
+
+    fun getTickets(errorCallback: (String?) -> Unit, successCallback: (SupportTicketsResponse) -> Unit) {
+        scope.launch {
+            when(val result = hubApiRepository.getTickets()){
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback.invoke(result.error.message)
+            }
+        }
+    }
+
+    fun getTicket(ticketId:String, errorCallback: (String?) -> Unit, successCallback: (SupportTicketResponse) -> Unit) {
+        scope.launch {
+            when(val result = hubApiRepository.getTicket(ticketId)){
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
             }
         }
     }

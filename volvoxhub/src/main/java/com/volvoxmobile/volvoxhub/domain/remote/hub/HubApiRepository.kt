@@ -7,8 +7,16 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseRes
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import okhttp3.ResponseBody
 import com.google.gson.JsonObject
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface HubApiRepository {
     suspend fun register(registerRequest: RegisterRequest): GenericResult<RegisterBaseResponse>
@@ -16,4 +24,13 @@ interface HubApiRepository {
     suspend fun rewardStatus(): GenericResult<RewardStatusResponse>
     suspend fun updateConversion(conversionData: JsonObject): GenericResult<ResponseBody>
     suspend fun usePromoCode(promoCodeRequest: PromoCodeRequest): GenericResult<PromoCodeResponse>
+    suspend fun getTickets(): GenericResult<SupportTicketsResponse>
+    suspend fun getTicket(
+        ticketId: String
+    ): GenericResult<SupportTicketResponse>
+    suspend fun createNewTicket(newTicketRequest: NewTicketRequest)
+    suspend fun createNewMessage(
+        ticketId: String,
+        messageTicketRequest: MessageTicketRequest
+    )
 }

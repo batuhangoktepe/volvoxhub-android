@@ -1,6 +1,5 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,23 +16,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.volvoxmobile.volvoxhub.R
-import com.volvoxmobile.volvoxhub.ui.theme.HubColors
-import com.volvoxmobile.volvoxhub.ui.theme.HubTheme
+import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
 
 @Composable
-fun BaseTopBar(
+fun BaseHubTopBar(
     modifier: Modifier = Modifier,
     title: String? = null,
+    titleFontFamily: FontFamily,
     onNavigateBackClick: () -> Unit,
     content: (@Composable () -> Unit)? = null,
     actionsButtons: (@Composable () -> Unit)? = null,
@@ -42,7 +37,7 @@ fun BaseTopBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(HubTheme.colors.topBarBackground)
+            .background(VolvoxHubTheme.colors.topBarBackground)
     ) {
         Row(
             modifier = modifier
@@ -57,7 +52,7 @@ fun BaseTopBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_left),
                     contentDescription = "Navigation Back",
-                    tint = HubTheme.colors.topBarIconColor,
+                    tint = VolvoxHubTheme.colors.topBarIconColor,
                     modifier = Modifier.clickable {
                         onNavigateBackClick()
                     }
@@ -69,7 +64,9 @@ fun BaseTopBar(
                     Text(
                         text = title,
                         fontSize = 18.sp,
+                        fontFamily = titleFontFamily,
                         modifier = Modifier.padding(start = 10.dp),
+                        color = VolvoxHubTheme.colors.topBarTextColor
                     )
                 }
             }
@@ -95,25 +92,21 @@ fun BaseTopBar(
 @PreviewLightDark
 @Composable
 fun PreviewBaseTopBar(modifier: Modifier = Modifier) {
-    HubTheme {
-        BaseTopBar(modifier, onNavigateBackClick = {}, content = {
+    VolvoxHubTheme {
+        BaseHubTopBar(modifier, onNavigateBackClick = {}, content = {
             Text(
                 "Atom AI",
-                color = HubTheme.colors.topBarTextColor,
+                color = VolvoxHubTheme.colors.topBarTextColor,
                 modifier = Modifier.padding(start = 6.dp)
             )
         }, actionsButtons = {
             Icon(
-                imageVector =Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Icon(
-                imageVector =Icons.Default.ArrowDropDown,
+                imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = null,
             )
         },
-            isSpacerVisible = true
+            isSpacerVisible = true,
+            titleFontFamily = FontFamily.Monospace
         )
     }
 }
