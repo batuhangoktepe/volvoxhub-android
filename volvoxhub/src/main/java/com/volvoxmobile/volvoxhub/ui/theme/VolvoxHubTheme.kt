@@ -15,7 +15,10 @@ data class VolvoxHubColors(
     val textColor: Color = Color.Unspecified,
     val background: Color = Color.Unspecified,
     val contactDescriptionColor: Color = Color.Unspecified,
-    val contactDateColor: Color = Color.Unspecified
+    val contactDateColor: Color = Color.Unspecified,
+    val editPenBackground: Color = Color.Unspecified,
+    val editPenTint: Color = Color.Unspecified,
+    val newChatButtonColor: Color = Color.Unspecified
 )
 
 val LocalHubColors = staticCompositionLocalOf {

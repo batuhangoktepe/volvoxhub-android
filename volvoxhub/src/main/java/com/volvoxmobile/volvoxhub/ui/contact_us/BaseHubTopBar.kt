@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +30,7 @@ fun BaseHubTopBar(
     modifier: Modifier = Modifier,
     title: String? = null,
     titleFontFamily: FontFamily,
+    isTitleCentered: Boolean = false,
     onNavigateBackClick: () -> Unit,
     content: (@Composable () -> Unit)? = null,
     actionsButtons: (@Composable () -> Unit)? = null,
@@ -47,7 +49,8 @@ fun BaseHubTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_left),
@@ -61,19 +64,27 @@ fun BaseHubTopBar(
                     content()
                 }
                 title?.let {
+                    val titleModifier = if (isTitleCentered) {
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp)
+                    } else {
+                        Modifier.padding(start = 10.dp)
+                    }
                     Text(
                         text = title,
                         fontSize = 18.sp,
                         fontFamily = titleFontFamily,
-                        modifier = Modifier.padding(start = 10.dp),
+                        modifier = titleModifier,
+                        textAlign = if (isTitleCentered) TextAlign.Center else TextAlign.Start,
                         color = VolvoxHubTheme.colors.topBarTextColor
                     )
                 }
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                actionsButtons?.let {
+            actionsButtons?.let {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     actionsButtons()
                 }
             }

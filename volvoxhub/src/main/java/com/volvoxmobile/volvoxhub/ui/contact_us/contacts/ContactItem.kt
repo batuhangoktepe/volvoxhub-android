@@ -40,7 +40,7 @@ fun ContactItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .padding(bottom = 12.dp)
+            .padding(bottom = 24.dp)
             .wrapContentHeight()
             .background(color = VolvoxHubTheme.colors.background)
             .clickable {

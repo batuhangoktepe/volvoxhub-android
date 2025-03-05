@@ -70,6 +70,7 @@ fun ContactDetail(
             BaseHubTopBar(
                 modifier = modifier,
                 title = "Contact us",
+                isTitleCentered = true,
                 titleFontFamily = FontFamily.Serif,
                 onNavigateBackClick = navigateBack,
                 isSpacerVisible = true
