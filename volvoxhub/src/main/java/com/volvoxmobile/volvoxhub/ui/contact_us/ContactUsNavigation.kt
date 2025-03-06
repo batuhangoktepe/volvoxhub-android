@@ -46,7 +46,8 @@ fun NavGraphBuilder.contactUsNavigation(
     fonts: HubFonts,
     darkColors: VolvoxHubColors,
     lightColors: VolvoxHubColors,
-    hubResources: HubResources
+    hubResources: HubResources,
+    isTitleCentered: Boolean
 ) {
     navigation<ContactsScreensRoute>(
         startDestination = ContactsRoute
@@ -57,13 +58,15 @@ fun NavGraphBuilder.contactUsNavigation(
             fonts = fonts,
             darkColors = darkColors,
             lightColors = lightColors,
+            isTitleCentered
         )
         contactDetailScreen(
             navigateBack = navController::popBackStack,
             fonts = fonts,
             darkColors = darkColors,
             lightColors = lightColors,
-            hubResources = hubResources
+            hubResources = hubResources,
+            isTitleCentered
         )
     }
 }

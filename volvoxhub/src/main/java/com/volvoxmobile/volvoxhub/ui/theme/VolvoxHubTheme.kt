@@ -29,6 +29,8 @@ data class VolvoxHubColors(
     val userMessageTime: Color = Color.Unspecified,
     val contactMessageBackground: Color = Color.Unspecified,
     val contactMessageTime: Color = Color.Unspecified,
+    val contactMessageBorder:Color = Color.Unspecified,
+    val progressIndicatorColor: Color = Color.Unspecified
 )
 
 val LocalHubColors = staticCompositionLocalOf {

@@ -1,7 +1,5 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us.contacts
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,9 +23,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -38,69 +33,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import com.volvoxmobile.volvoxhub.R
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
 import com.volvoxmobile.volvoxhub.ui.contact_us.BaseHubTopBar
 import com.volvoxmobile.volvoxhub.ui.contact_us.HubFonts
-import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubColors
 import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
-import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-
-@Serializable
-data object ContactsRoute
-
-fun NavGraphBuilder.contactsScreen(
-    navigateToDetail: (String?) -> Unit,
-    navigateBack: () -> Unit,
-    fonts: HubFonts,
-    darkColors: VolvoxHubColors,
-    lightColors: VolvoxHubColors
-) {
-    composable<ContactsRoute> (
-        enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(500)
-            )
-        },
-        exitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(600)
-            )
-        },
-        popEnterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(500)
-            )
-        },
-        popExitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(600)
-            )
-        }
-    ) {
-        VolvoxHubTheme(
-            darkColors = darkColors,
-            lightColors = lightColors
-        ) {
-            Contacts(
-                navigateToDetail = navigateToDetail,
-                fonts = fonts,
-                navigateBack = navigateBack,
-                topBarTitle = "Contact Us"
-            )
-        }
-    }
-}
 
 @Composable
 fun Contacts(
@@ -109,7 +50,8 @@ fun Contacts(
     navigateToDetail: (ticketId: String?) -> Unit,
     navigateBack: () -> Unit,
     fonts: HubFonts,
-    topBarTitle: String
+    topBarTitle: String,
+    isTitleCentered: Boolean
 ) {
     val tickets by viewModel.contactsUiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -152,7 +94,14 @@ fun Contacts(
         when (tickets) {
             is ScreenUiState.Error -> {}
             ScreenUiState.Loading -> {
-                CircularProgressIndicator()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = VolvoxHubTheme.colors.progressIndicatorColor
+                    )
+                }
             }
             is ScreenUiState.Success -> {
                 if ((tickets as ScreenUiState.Success<SupportTicketsResponse>).data.isEmpty()) {

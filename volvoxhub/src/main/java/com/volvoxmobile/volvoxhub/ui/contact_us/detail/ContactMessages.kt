@@ -42,7 +42,8 @@ fun ContactMessages(
             )
             Text(
                 text = "How can i help you",
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                fontFamily = fonts.semiBold
             )
         }
     } else {
@@ -50,18 +51,20 @@ fun ContactMessages(
             modifier = modifier
                 .fillMaxSize()
                 .background(VolvoxHubTheme.colors.background)
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(top = 24.dp)
+                .padding(horizontal = 24.dp),
         ) {
             messageList.forEach {
                 when (it.author) {
                     Author.GPT -> ContactMessage(
-                        modifier = Modifier.align(Alignment.Start),
+                        modifier = Modifier.align(Alignment.Start).padding(bottom = 24.dp),
                         message = it,
                         fonts = fonts
                     )
 
                     Author.USER -> UserMessage(
-                        modifier = Modifier.align(Alignment.End),
+                        modifier = Modifier.align(Alignment.End).padding(bottom = 24.dp),
                         message = it,
                         fonts = fonts
                     )
