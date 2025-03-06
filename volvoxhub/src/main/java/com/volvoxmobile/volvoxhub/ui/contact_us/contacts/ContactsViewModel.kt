@@ -22,7 +22,7 @@ class ContactsViewModel @Inject constructor() : ViewModel() {
         getTickets()
     }
 
-    private fun getTickets() {
+    fun getTickets() {
         viewModelScope.launch {
             VolvoxHubService.instance.getTickets(
                 errorCallback = { errorMessage ->

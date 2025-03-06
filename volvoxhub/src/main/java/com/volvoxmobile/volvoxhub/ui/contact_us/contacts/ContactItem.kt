@@ -31,6 +31,7 @@ fun ContactItem(
     contactTitle: String,
     contactDescription: String,
     contactDate: String,
+    isSeen: Boolean,
     titleFamily: FontFamily,
     descriptionFamily: FontFamily,
     dateFamily: FontFamily,
@@ -52,7 +53,10 @@ fun ContactItem(
             modifier = Modifier
                 .padding(end = 8.dp, top = 8.dp)
                 .size(6.dp)
-                .background(color = Color.Magenta, shape = CircleShape)
+                .background(
+                    color = if (isSeen) Color.Transparent else Color.Magenta,
+                    shape = CircleShape
+                )
         )
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -99,6 +103,7 @@ fun PreviewContactItem(modifier: Modifier = Modifier) {
         contactDate = "09.24 AM",
         titleFamily = FontFamily.Serif,
         descriptionFamily = FontFamily.SansSerif,
-        dateFamily = FontFamily.Serif
-    ){}
+        dateFamily = FontFamily.Serif,
+        isSeen = true
+    ) {}
 }

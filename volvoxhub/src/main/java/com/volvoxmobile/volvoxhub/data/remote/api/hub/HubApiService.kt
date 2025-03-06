@@ -8,6 +8,8 @@ import com.google.gson.JsonObject
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
@@ -44,11 +46,11 @@ interface HubApiService {
     ): SupportTicketResponse
 
     @POST("support/tickets")
-    suspend fun createNewTicket(@Body newTicketRequest: NewTicketRequest)
+    suspend fun createNewTicket(@Body newTicketRequest: NewTicketRequest): CreateNewTicketResponse
 
     @POST("support/tickets/{ticket_id}/messages")
     suspend fun createNewMessage(
         @Path("ticket_id") ticketId: String,
         @Body messageTicketRequest: MessageTicketRequest
-    )
+    ): CreateNewMessageResponse
 }

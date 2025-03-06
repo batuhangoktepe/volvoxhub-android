@@ -18,7 +18,17 @@ data class VolvoxHubColors(
     val contactDateColor: Color = Color.Unspecified,
     val editPenBackground: Color = Color.Unspecified,
     val editPenTint: Color = Color.Unspecified,
-    val newChatButtonColor: Color = Color.Unspecified
+    val newChatButtonColor: Color = Color.Unspecified,
+    val textFieldBackground: Color = Color.Unspecified,
+    val messageBarBorder: Color = Color.Unspecified,
+    val textFieldPlaceholder: Color = Color.Unspecified,
+    val isTypingColor: Color = Color.Unspecified,
+    val textFieldImageBorder: Color = Color.Unspecified,
+    val addButtonColor: Color = Color.Unspecified,
+    val userMessageBackground: Color = Color.Unspecified,
+    val userMessageTime: Color = Color.Unspecified,
+    val contactMessageBackground: Color = Color.Unspecified,
+    val contactMessageTime: Color = Color.Unspecified,
 )
 
 val LocalHubColors = staticCompositionLocalOf {

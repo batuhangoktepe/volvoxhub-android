@@ -1,7 +1,10 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us.contacts
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -18,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +34,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -54,7 +62,32 @@ fun NavGraphBuilder.contactsScreen(
     darkColors: VolvoxHubColors,
     lightColors: VolvoxHubColors
 ) {
-    composable<ContactsRoute> {
+    composable<ContactsRoute> (
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(600)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(600)
+            )
+        }
+    ) {
         VolvoxHubTheme(
             darkColors = darkColors,
             lightColors = lightColors
@@ -79,6 +112,20 @@ fun Contacts(
     topBarTitle: String
 ) {
     val tickets by viewModel.contactsUiState.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.getTickets()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -107,45 +154,57 @@ fun Contacts(
             ScreenUiState.Loading -> {
                 CircularProgressIndicator()
             }
-
             is ScreenUiState.Success -> {
                 if ((tickets as ScreenUiState.Success<SupportTicketsResponse>).data.isEmpty()) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_pen),
-                        modifier = Modifier
-                            .padding(bottom = 24.dp)
-                            .background(
-                                color = VolvoxHubTheme.colors.editPenBackground,
-                                shape = CircleShape
-                            )
-                            .padding(16.dp),
-                        contentDescription = null,
-                        tint = VolvoxHubTheme.colors.editPenTint
-                    )
-                    Text(
-                        text = "Lorem ipsum dolar sit amet",
-                        color = VolvoxHubTheme.colors.textColor,
-                        fontFamily = fonts.regular
-                    )
-                    Button(
-                        onClick = { navigateToDetail(null) },
-                        shape = RectangleShape,
-                        colors = ButtonColors(
-                            containerColor = VolvoxHubTheme.colors.newChatButtonColor,
-                            contentColor = VolvoxHubTheme.colors.textColor,
-                            disabledContentColor = Color.Gray,
-                            disabledContainerColor = Color.Gray
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
-                        contentPadding = PaddingValues(vertical = 14.dp)
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = "New Chat",
-                            fontFamily = fonts.bold,
-                            fontSize = 14.sp
-                        )
+                        Column(
+                            modifier = Modifier.padding(top = 105.dp).weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_pen),
+                                modifier = Modifier
+                                    .padding(bottom = 24.dp)
+                                    .background(
+                                        color = VolvoxHubTheme.colors.editPenBackground,
+                                        shape = CircleShape
+                                    )
+                                    .padding(16.dp),
+                                contentDescription = null,
+                                tint = VolvoxHubTheme.colors.editPenTint
+                            )
+                            Text(
+                                text = "Lorem ipsum dolar sit amet",
+                                color = VolvoxHubTheme.colors.textColor,
+                                fontFamily = fonts.regular,
+                                fontSize = 14.sp
+                            )
+                        }
+                        Button(
+                            onClick = { navigateToDetail(null) },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonColors(
+                                containerColor = VolvoxHubTheme.colors.newChatButtonColor,
+                                contentColor = VolvoxHubTheme.colors.textColor,
+                                disabledContentColor = Color.Gray,
+                                disabledContainerColor = Color.Gray
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp)
+                                .padding(bottom = 24.dp),
+                            contentPadding = PaddingValues(vertical = 14.dp)
+                        ) {
+                            Text(
+                                text = "New Chat",
+                                fontFamily = fonts.bold,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
                 } else {
                     LazyColumn(
@@ -156,6 +215,7 @@ fun Contacts(
                                 contactTitle = it.category ?: "",
                                 contactDescription = it.lastMessage ?: "",
                                 contactDate = formatTimestampToAmPm(it.lastMessageCreatedAt ?: ""),
+                                isSeen = it.isSeen ?: false,
                                 titleFamily = fonts.contactTitle,
                                 descriptionFamily = fonts.contactDescription,
                                 dateFamily = fonts.contactDate

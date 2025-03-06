@@ -1,5 +1,6 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us
 
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -22,7 +23,16 @@ data class HubFonts(
     val messageDate: FontFamily,
     val contactTitle: FontFamily,
     val contactDate: FontFamily,
-    val contactDescription: FontFamily
+    val contactDescription: FontFamily,
+    val messageText: FontFamily,
+    val messageDateText: FontFamily,
+)
+
+data class HubResources(
+    @DrawableRes
+    val sendButton: Int,
+    @DrawableRes
+    val disabledSendButton: Int
 )
 
 @Serializable
@@ -35,7 +45,8 @@ fun NavGraphBuilder.contactUsNavigation(
     navController: NavController,
     fonts: HubFonts,
     darkColors: VolvoxHubColors,
-    lightColors: VolvoxHubColors
+    lightColors: VolvoxHubColors,
+    hubResources: HubResources
 ) {
     navigation<ContactsScreensRoute>(
         startDestination = ContactsRoute
@@ -45,13 +56,14 @@ fun NavGraphBuilder.contactUsNavigation(
             navigateBack = navController::popBackStack,
             fonts = fonts,
             darkColors = darkColors,
-            lightColors = lightColors
+            lightColors = lightColors,
         )
         contactDetailScreen(
             navigateBack = navController::popBackStack,
             fonts = fonts,
             darkColors = darkColors,
-            lightColors = lightColors
+            lightColors = lightColors,
+            hubResources = hubResources
         )
     }
 }

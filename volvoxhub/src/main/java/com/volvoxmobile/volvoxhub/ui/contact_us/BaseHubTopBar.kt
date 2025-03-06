@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -95,6 +96,7 @@ fun BaseHubTopBar(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
                     .size(1.dp)
+                    .background(Color.Gray)
             )
         }
     }

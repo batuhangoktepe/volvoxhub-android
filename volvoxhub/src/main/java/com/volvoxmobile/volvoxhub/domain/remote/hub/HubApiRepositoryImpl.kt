@@ -12,6 +12,8 @@ import com.google.gson.JsonObject
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
@@ -40,14 +42,13 @@ class HubApiRepositoryImpl(
     override suspend fun getTicket(ticketId: String): GenericResult<SupportTicketResponse> =
         handleHubRequest { hubApiService.getTicket(ticketId) }
 
-    override suspend fun createNewTicket(newTicketRequest: NewTicketRequest) {
+    override suspend fun createNewTicket(newTicketRequest: NewTicketRequest): GenericResult<CreateNewTicketResponse> =
         handleHubRequest { hubApiService.createNewTicket(newTicketRequest) }
-    }
 
     override suspend fun createNewMessage(
         ticketId: String,
         messageTicketRequest: MessageTicketRequest
-    ) {
+    ): GenericResult<CreateNewMessageResponse> =
         handleHubRequest { hubApiService.createNewMessage(ticketId, messageTicketRequest) }
-    }
+
 }
