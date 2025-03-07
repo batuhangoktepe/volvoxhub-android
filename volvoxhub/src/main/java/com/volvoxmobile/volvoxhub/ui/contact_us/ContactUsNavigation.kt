@@ -5,34 +5,39 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import com.volvoxmobile.volvoxhub.R
 import com.volvoxmobile.volvoxhub.ui.contact_us.contacts.ContactsRoute
 import com.volvoxmobile.volvoxhub.ui.contact_us.contacts.contactsScreen
 import com.volvoxmobile.volvoxhub.ui.contact_us.detail.contactDetailScreen
 import com.volvoxmobile.volvoxhub.ui.contact_us.detail.navigateToContactDetail
+import com.volvoxmobile.volvoxhub.ui.theme.Theme
 import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubColors
+import com.volvoxmobile.volvoxhub.ui.theme.boldFont
+import com.volvoxmobile.volvoxhub.ui.theme.extraBoldFont
+import com.volvoxmobile.volvoxhub.ui.theme.mediumFont
+import com.volvoxmobile.volvoxhub.ui.theme.regularFont
+import com.volvoxmobile.volvoxhub.ui.theme.semiBoldFont
 import kotlinx.serialization.Serializable
 
 data class HubFonts(
-    val medium: FontFamily,
-    val regular: FontFamily,
-    val semiBold: FontFamily,
-    val bold: FontFamily,
-    val extraBold: FontFamily,
-    val topBar: FontFamily,
-    val message: FontFamily,
-    val messageDate: FontFamily,
-    val contactTitle: FontFamily,
-    val contactDate: FontFamily,
-    val contactDescription: FontFamily,
-    val messageText: FontFamily,
-    val messageDateText: FontFamily,
+    val medium: FontFamily = mediumFont,
+    val regular: FontFamily = regularFont,
+    val semiBold: FontFamily = semiBoldFont,
+    val bold: FontFamily = boldFont,
+    val extraBold: FontFamily = extraBoldFont,
+    val topBar: FontFamily = semiBoldFont,
+    val contactTitle: FontFamily = mediumFont,
+    val contactDate: FontFamily = mediumFont,
+    val contactDescription: FontFamily = regularFont,
+    val messageText: FontFamily = mediumFont,
+    val messageDateText: FontFamily = mediumFont,
 )
 
 data class HubResources(
     @DrawableRes
-    val sendButton: Int,
+    val sendButton: Int = R.drawable.ic_send,
     @DrawableRes
-    val disabledSendButton: Int
+    val disabledSendButton: Int = R.drawable.ic_disable_send
 )
 
 @Serializable
@@ -43,11 +48,11 @@ fun NavController.navigateToContactsScreens(
 
 fun NavGraphBuilder.contactUsNavigation(
     navController: NavController,
-    fonts: HubFonts,
-    darkColors: VolvoxHubColors,
-    lightColors: VolvoxHubColors,
-    hubResources: HubResources,
-    isTitleCentered: Boolean
+    fonts: HubFonts = HubFonts(),
+    darkColors: VolvoxHubColors = VolvoxHubColors.create(Theme.DARK),
+    lightColors: VolvoxHubColors = VolvoxHubColors.create(Theme.LIGHT),
+    hubResources: HubResources = HubResources(),
+    isTitleCentered: Boolean = false
 ) {
     navigation<ContactsScreensRoute>(
         startDestination = ContactsRoute

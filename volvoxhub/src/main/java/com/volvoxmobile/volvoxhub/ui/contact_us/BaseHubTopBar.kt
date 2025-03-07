@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.volvoxmobile.volvoxhub.R
+import com.volvoxmobile.volvoxhub.common.extensions.safeClick
 import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
 
 @Composable
@@ -57,7 +58,7 @@ fun BaseHubTopBar(
                     painter = painterResource(R.drawable.ic_left),
                     contentDescription = "Navigation Back",
                     tint = VolvoxHubTheme.colors.topBarIconColor,
-                    modifier = Modifier.clickable {
+                    modifier = Modifier.safeClick {
                         onNavigateBackClick()
                     }
                 )
@@ -96,7 +97,7 @@ fun BaseHubTopBar(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
                     .size(1.dp)
-                    .background(Color.Gray)
+                    .background(VolvoxHubTheme.colors.topBarSpacer)
             )
         }
     }

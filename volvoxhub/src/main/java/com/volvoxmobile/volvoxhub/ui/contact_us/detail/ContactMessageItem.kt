@@ -7,13 +7,11 @@ import androidx.compose.runtime.Stable
 data class ContactMessageItem(
     val author: Author,
     val message: String,
-    val mediaUri: Uri? = null,
-    val imageUrl: String? = null,
-    val time: String? = null,
+    val time: String? = null
 )
 
 @Stable
-enum class Author(val title: String) {
-    GPT("Atom AI"),
-    USER("You")
+enum class Author() {
+    GPT,
+    USER
 }

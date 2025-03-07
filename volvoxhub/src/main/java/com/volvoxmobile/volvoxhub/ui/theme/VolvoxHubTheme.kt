@@ -7,6 +7,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+enum class Theme {
+    LIGHT, DARK
+}
+
 @Immutable
 data class VolvoxHubColors(
     val topBarIconColor: Color = Color.Unspecified,
@@ -27,11 +31,73 @@ data class VolvoxHubColors(
     val addButtonColor: Color = Color.Unspecified,
     val userMessageBackground: Color = Color.Unspecified,
     val userMessageTime: Color = Color.Unspecified,
+    val userMessageText: Color = Color.Unspecified,
     val contactMessageBackground: Color = Color.Unspecified,
     val contactMessageTime: Color = Color.Unspecified,
-    val contactMessageBorder:Color = Color.Unspecified,
-    val progressIndicatorColor: Color = Color.Unspecified
-)
+    val contactMessageBorder: Color = Color.Unspecified,
+    val progressIndicatorColor: Color = Color.Unspecified,
+    val topBarSpacer: Color = Color.Unspecified
+) {
+    companion object {
+        fun create(theme: Theme): VolvoxHubColors {
+            return when (theme) {
+                Theme.LIGHT -> VolvoxHubColors(
+                    topBarIconColor = Color.Black,
+                    topBarTextColor = Color.Black,
+                    topBarBackground = Color.White,
+                    textColor = Color.Black,
+                    background = Color.White,
+                    contactDescriptionColor = LightCaption,
+                    contactDateColor = LightCaption,
+                    editPenBackground = Color.Gray,
+                    editPenTint = Color.White,
+                    newChatButtonColor = Primary,
+                    addButtonColor = Primary,
+                    progressIndicatorColor = Primary,
+                    messageBarBorder = LightBorder,
+                    textFieldBackground = Light,
+                    textFieldPlaceholder = LightCaption,
+                    isTypingColor = LightCaption,
+                    textFieldImageBorder = Primary,
+                    userMessageBackground = Primary,
+                    userMessageTime = LightChat,
+                    contactMessageBackground = Color.White,
+                    contactMessageTime = LightCaption,
+                    contactMessageBorder = LightBorder,
+                    topBarSpacer = LightBorder,
+                    userMessageText = Color.White
+                )
+
+                Theme.DARK -> VolvoxHubColors(
+                    topBarIconColor = Color.White,
+                    topBarTextColor = Color.White,
+                    topBarBackground = Color.Black,
+                    textColor = Color.White,
+                    background = Color.Black,
+                    contactDescriptionColor = ContactDescriptionColor,
+                    contactDateColor = ContactDescriptionColor,
+                    editPenBackground = DarkGray,
+                    editPenTint = Color.White,
+                    newChatButtonColor = Primary,
+                    addButtonColor = Primary,
+                    userMessageBackground = Primary,
+                    contactMessageBackground = Color.Black,
+                    progressIndicatorColor = Primary,
+                    messageBarBorder = SpacerGray,
+                    textFieldBackground = Dark,
+                    textFieldPlaceholder = Gray,
+                    isTypingColor = Gray,
+                    textFieldImageBorder = Primary,
+                    userMessageTime = UserMessageTimeColor,
+                    contactMessageTime = Gray,
+                    contactMessageBorder = Line,
+                    topBarSpacer = Line,
+                    userMessageText = Color.White
+                )
+            }
+        }
+    }
+}
 
 val LocalHubColors = staticCompositionLocalOf {
     VolvoxHubColors()

@@ -6,17 +6,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.volvoxmobile.volvoxhub.VolvoxHubService
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.ui.contact_us.contacts.ScreenUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @HiltViewModel
 class ContactDetailViewModel @Inject constructor() : ViewModel() {
@@ -27,8 +33,8 @@ class ContactDetailViewModel @Inject constructor() : ViewModel() {
         MutableStateFlow(
             ContactDetailUiState(
                 messageList = emptyList(),
-                screenState = ScreenUiState.Loading,
-                messageState = ScreenUiState.Loading
+                screenState = ContactDetailScreenUiState.Loading,
+                messageState = ContactDetailScreenUiState.Loading
             )
         )
 
@@ -41,14 +47,14 @@ class ContactDetailViewModel @Inject constructor() : ViewModel() {
                 errorCallback = { errorMessage ->
                     _contactsDetailUiState.update {
                         it.copy(
-                            screenState = ScreenUiState.Error(errorMessage)
+                            screenState = ContactDetailScreenUiState.Error(errorMessage)
                         )
                     }
                 },
                 successCallback = { supportTicket ->
                     _contactsDetailUiState.update { contactDetailUiState ->
                         contactDetailUiState.copy(
-                            screenState = ScreenUiState.Success(supportTicket),
+                            screenState = ContactDetailScreenUiState.Success,
                             messageList = supportTicket.messages?.map {
                                 ContactMessageItem(
                                     author = if (it?.isFromDevice == true) Author.USER else Author.GPT,
@@ -63,41 +69,53 @@ class ContactDetailViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun sendMessage(message: String) {
+    fun sendMessage(message: String, category: String) {
         viewModelScope.launch {
-            if (ticketId.isNullOrBlank()) {
-                VolvoxHubService.instance.createNewTicket(
-                    category = "BILLING",
-                    message = message,
-                    errorCallback = {
-                        Log.d("errorrss",it.toString())
-                    },
-                    successCallback = { createNewTicketResponse ->
-                        ticketId = createNewTicketResponse.id
-                    }
-                )
-            } else {
-                ticketId?.let {
+            ticketId?.let {
+                suspendCancellableCoroutine { continuation ->
                     VolvoxHubService.instance.createNewMessage(
                         ticketId = it,
                         message = message,
                         errorCallback = {},
-                        successCallback = {}
+                        successCallback = {
+                            continuation.resume(Unit)
+                        }
                     )
                 }
             }
-            ticketId?.let {
-                _contactsDetailUiState.update {
-                    it.copy(
-                        messageList = it.messageList + ContactMessageItem(
-                            author = Author.USER,
-                            message = message,
-                            mediaUri = null,
-                            imageUrl = null,
-                            time = getCurrentFormattedTime()
-                        )
+
+            if (ticketId.isNullOrBlank()) {
+                val createNewTicketResponse = suspendCancellableCoroutine { continuation ->
+                    VolvoxHubService.instance.createNewTicket(
+                        category = category,
+                        message = message,
+                        errorCallback = { },
+                        successCallback = { response ->
+                            continuation.resume(response)
+                        }
                     )
                 }
+                ticketId = createNewTicketResponse.id
+            }
+
+            _contactsDetailUiState.update {
+                it.copy(
+                    messageList = it.messageList + ContactMessageItem(
+                        author = Author.USER,
+                        message = message,
+                        time = getCurrentFormattedTime()
+                    )
+                )
+            }
+        }
+    }
+
+    fun cleanScreenState() {
+        viewModelScope.launch {
+            _contactsDetailUiState.update {
+                it.copy(
+                    screenState = ContactDetailScreenUiState.Success
+                )
             }
         }
     }
@@ -106,12 +124,21 @@ class ContactDetailViewModel @Inject constructor() : ViewModel() {
 @Stable
 data class ContactDetailUiState(
     val messageList: List<ContactMessageItem>,
-    val screenState: ScreenUiState<SupportTicketResponse>,
-    val messageState: ScreenUiState<SupportTicketResponse>
+    val screenState: ContactDetailScreenUiState,
+    val messageState: ContactDetailScreenUiState
 )
 
 fun getCurrentFormattedTime(): String {
-    val sdf = SimpleDateFormat("h:mm", Locale.getDefault())
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    sdf.timeZone = TimeZone.getTimeZone("UTC")
     return sdf.format(Date())
+}
+
+sealed interface ContactDetailScreenUiState {
+    data object Loading : ContactDetailScreenUiState
+
+    data class Error(val message: String? = null) : ContactDetailScreenUiState
+
+    data object Success : ContactDetailScreenUiState
 }
 

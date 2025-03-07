@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 data object ContactsRoute
 
 fun NavGraphBuilder.contactsScreen(
-    navigateToDetail: (String?) -> Unit,
+    navigateToDetail: (String?, category: String) -> Unit,
     navigateBack: () -> Unit,
     fonts: HubFonts,
     darkColors: VolvoxHubColors,
@@ -54,7 +54,6 @@ fun NavGraphBuilder.contactsScreen(
                 navigateToDetail = navigateToDetail,
                 fonts = fonts,
                 navigateBack = navigateBack,
-                topBarTitle = "Contact Us",
                 isTitleCentered = isTitleCentered
             )
         }

@@ -15,7 +15,7 @@ import javax.inject.Inject
 class ContactsViewModel @Inject constructor() : ViewModel() {
 
     private val _contactsUiState =
-        MutableStateFlow<ScreenUiState<SupportTicketsResponse>>(ScreenUiState.Loading)
+        MutableStateFlow<ScreenUiState>(ScreenUiState.Loading)
     val contactsUiState = _contactsUiState.asStateFlow()
 
     init {
@@ -40,10 +40,19 @@ class ContactsViewModel @Inject constructor() : ViewModel() {
     }
 }
 
-sealed interface ScreenUiState<out T> {
-    data object Loading : ScreenUiState<Nothing>
+sealed interface ScreenUiState {
+    data object Loading : ScreenUiState
 
-    data class Error(val message: String? = null) : ScreenUiState<Nothing>
+    data class Error(val message: String? = null) : ScreenUiState
 
-    data class Success<T>(val data: T) : ScreenUiState<T>
+    data class Success(val data: SupportTicketsResponse) : ScreenUiState
+}
+
+enum class TICKETCATEGORIES(val title: String) {
+    TECHNICAL_ISSUES("technical_issues"),
+    BILLING_ISSUES("billing_issues"),
+    ACCOUNT_ISSUES("account_issues"),
+    APP_USAGE("app_usage"),
+    FEATURE_REQUEST("feature_request"),
+    OTHER("other")
 }

@@ -1,13 +1,14 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us.contacts
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,10 +22,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +39,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.volvoxmobile.volvoxhub.R
+import com.volvoxmobile.volvoxhub.common.extensions.safeClick
+import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.ui.contact_us.BaseBottomSheet
 import com.volvoxmobile.volvoxhub.ui.contact_us.BaseHubTopBar
 import com.volvoxmobile.volvoxhub.ui.contact_us.HubFonts
 import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
@@ -47,14 +55,17 @@ import java.util.TimeZone
 fun Contacts(
     modifier: Modifier = Modifier,
     viewModel: ContactsViewModel = hiltViewModel<ContactsViewModel>(),
-    navigateToDetail: (ticketId: String?) -> Unit,
+    navigateToDetail: (ticketId: String?, category: String) -> Unit,
     navigateBack: () -> Unit,
     fonts: HubFonts,
-    topBarTitle: String,
     isTitleCentered: Boolean
 ) {
     val tickets by viewModel.contactsUiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
+    var onNewTicket by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val context = LocalContext.current
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -75,24 +86,26 @@ fun Contacts(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BaseHubTopBar(
-            title = topBarTitle,
+            title = Localizations.get(context,"contact_us"),
             titleFontFamily = fonts.semiBold,
-            isTitleCentered = true,
+            isTitleCentered = isTitleCentered,
             onNavigateBackClick = navigateBack,
             actionsButtons = {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_pen),
                     tint = VolvoxHubTheme.colors.topBarIconColor,
                     contentDescription = "Edit",
-                    modifier = Modifier.clickable {
-                        navigateToDetail(null)
+                    modifier = Modifier.safeClick {
+                        onNewTicket = true
                     }
                 )
             },
             isSpacerVisible = true
         )
         when (tickets) {
-            is ScreenUiState.Error -> {}
+            is ScreenUiState.Error -> {
+            }
+
             ScreenUiState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -103,15 +116,18 @@ fun Contacts(
                     )
                 }
             }
+
             is ScreenUiState.Success -> {
-                if ((tickets as ScreenUiState.Success<SupportTicketsResponse>).data.isEmpty()) {
+                if ((tickets as ScreenUiState.Success).data.isEmpty()) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(
-                            modifier = Modifier.padding(top = 105.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(top = 105.dp)
+                                .weight(1f),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
@@ -127,18 +143,18 @@ fun Contacts(
                                 tint = VolvoxHubTheme.colors.editPenTint
                             )
                             Text(
-                                text = "Lorem ipsum dolar sit amet",
+                                text = Localizations.get(context,"you_dont_have_any_support_ticket"),
                                 color = VolvoxHubTheme.colors.textColor,
                                 fontFamily = fonts.regular,
                                 fontSize = 14.sp
                             )
                         }
                         Button(
-                            onClick = { navigateToDetail(null) },
+                            onClick = { onNewTicket = true },
                             shape = RoundedCornerShape(8.dp),
                             colors = ButtonColors(
                                 containerColor = VolvoxHubTheme.colors.newChatButtonColor,
-                                contentColor = VolvoxHubTheme.colors.textColor,
+                                contentColor = Color.White,
                                 disabledContentColor = Color.Gray,
                                 disabledContainerColor = Color.Gray
                             ),
@@ -149,7 +165,7 @@ fun Contacts(
                             contentPadding = PaddingValues(vertical = 14.dp)
                         ) {
                             Text(
-                                text = "New Chat",
+                                text = Localizations.get(context,"create_new_ticket"),
                                 fontFamily = fonts.bold,
                                 fontSize = 14.sp
                             )
@@ -159,7 +175,7 @@ fun Contacts(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items((tickets as ScreenUiState.Success<SupportTicketsResponse>).data) {
+                        items((tickets as ScreenUiState.Success).data) {
                             ContactItem(
                                 contactTitle = it.category ?: "",
                                 contactDescription = it.lastMessage ?: "",
@@ -169,12 +185,48 @@ fun Contacts(
                                 descriptionFamily = fonts.contactDescription,
                                 dateFamily = fonts.contactDate
                             ) {
-                                navigateToDetail(it.id ?: "")
+                                navigateToDetail(it.id ?: "", it.category ?: "")
                             }
                         }
                     }
                 }
             }
+        }
+        if (onNewTicket) {
+            BaseBottomSheet(
+                onDismissRequest = { onNewTicket = false },
+                content = {
+                    Column(
+                        Modifier.padding(horizontal = 24.dp)
+                    ) {
+                        TICKETCATEGORIES.entries.forEachIndexed { index, category ->
+                            Text(
+                                text = Localizations.get(context, category.title),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp)
+                                    .padding(start = 16.dp)
+                                    .safeClick {
+                                        onNewTicket = false
+                                        navigateToDetail(null, category.name)
+                                    },
+                                color = VolvoxHubTheme.colors.textColor,
+                                fontFamily = fonts.regular,
+                                fontSize = 14.sp
+                            )
+
+                            if (index < TICKETCATEGORIES.entries.size - 1) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                        .background(VolvoxHubTheme.colors.topBarSpacer)
+                                )
+                            }
+                        }
+                    }
+                }
+            )
         }
     }
 }

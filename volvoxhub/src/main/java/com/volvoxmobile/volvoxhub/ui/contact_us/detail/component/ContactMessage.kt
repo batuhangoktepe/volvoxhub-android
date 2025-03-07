@@ -2,6 +2,7 @@ package com.volvoxmobile.volvoxhub.ui.contact_us.detail.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,7 +51,8 @@ fun ContactMessage(
                 )
             )
             .padding(start = 16.dp, top = 10.dp, bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
         Text(

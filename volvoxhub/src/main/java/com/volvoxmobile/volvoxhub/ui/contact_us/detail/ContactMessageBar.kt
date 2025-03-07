@@ -102,20 +102,6 @@ fun ContactMessageBar(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = if (isOverflowing) Alignment.Bottom else Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = if (isAddButtonClicked)
-                        painterResource(R.drawable.ic_close) else painterResource(
-                        R.drawable.ic_add
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .clickableWithoutRipple {
-                            isAddButtonClicked = !isAddButtonClicked
-                        }
-                        .size(20.dp),
-                    tint = VolvoxHubTheme.colors.addButtonColor
-                )
                 OutlinedTextField(
                     value = textFieldValue,
                     onValueChange = {

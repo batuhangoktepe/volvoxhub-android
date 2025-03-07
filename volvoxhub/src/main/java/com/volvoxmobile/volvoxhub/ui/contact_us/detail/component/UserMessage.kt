@@ -1,6 +1,7 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us.detail.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +31,6 @@ fun UserMessage(
 ) {
     Row(
         modifier = modifier
-            .wrapContentSize()
             .widthIn(max = 300.dp, min = 100.dp)
             .heightIn(min = 45.dp)
             .background(
@@ -40,26 +41,28 @@ fun UserMessage(
                     bottomStart = 16.dp
                 )
             )
-            .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 2.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
-            text = message.message,
-            color = VolvoxHubTheme.colors.textColor,
-            modifier = Modifier
-                .padding(4.dp)
-                .padding(end = 16.dp),
-            fontFamily = fonts.messageText,
-            fontSize = 14.sp
-        )
-        Text(
-            text = formatTimestampToAmPm(message.time ?: ""),
-            fontFamily = fonts.messageDateText,
-            fontSize = 8.sp,
-            color = VolvoxHubTheme.colors.userMessageTime,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(start = 4.dp)
-                .offset(y = 8.dp)
-        )
+        Column(modifier = Modifier.weight(1f, fill = false)) {
+            Text(
+                text = message.message,
+                color = VolvoxHubTheme.colors.userMessageText,
+                modifier = Modifier.padding(4.dp),
+                fontFamily = fonts.messageText,
+                fontSize = 14.sp
+            )
+        }
+        message.time?.let {
+            Text(
+                text = formatTimestampToAmPm(message.time),
+                fontFamily = fonts.messageDateText,
+                fontSize = 8.sp,
+                color = VolvoxHubTheme.colors.userMessageTime,
+                modifier = Modifier
+                    .align(Alignment.Bottom)
+                    .padding(start = 4.dp)
+            )
+        }
     }
 }

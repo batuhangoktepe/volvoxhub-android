@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.volvoxmobile.volvoxhub.ui.theme.HubTheme
+import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
 
 
 @Composable
@@ -196,7 +196,7 @@ fun TestCaseCard(
 @Preview(showBackground = true)
 @Composable
 fun BBCodeTestPreview() {
-    HubTheme {
+    VolvoxHubTheme {
         BBCodeTestScreen()
     }
 }

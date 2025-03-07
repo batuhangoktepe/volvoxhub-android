@@ -2,9 +2,11 @@ package com.volvoxmobile.volvoxhub.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.volvoxmobile.volvoxhub.R
 
 // Set of Material typography styles to start with
 val Typography =
@@ -34,3 +36,10 @@ val Typography =
     )
      */
     )
+
+val mediumFont = FontFamily(Font(R.font.poppins_medium))
+val regularFont = FontFamily(Font(R.font.poppins_regular))
+val semiBoldFont = FontFamily(Font(R.font.poppins_semibold))
+val boldFont = FontFamily(Font(R.font.poppins_bold))
+val extraBoldFont = FontFamily(Font(R.font.poppins_extrabold))
+val lightFont = FontFamily(Font(R.font.poppins_light))

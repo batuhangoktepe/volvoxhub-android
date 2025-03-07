@@ -14,11 +14,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ContactDetailRoute(
-    val ticketId: String? = null
+    val ticketId: String? = null,
+    val category: String
 )
 
-fun NavController.navigateToContactDetail(ticketId: String?) =
-    navigate(ContactDetailRoute(ticketId))
+fun NavController.navigateToContactDetail(ticketId: String?, category: String) =
+    navigate(ContactDetailRoute(ticketId, category))
 
 fun NavGraphBuilder.contactDetailScreen(
     navigateBack: () -> Unit,
@@ -64,6 +65,7 @@ fun NavGraphBuilder.contactDetailScreen(
                 fonts = fonts,
                 hubResources = hubResources,
                 ticketId = arguments.ticketId,
+                category = arguments.category,
                 isTitleCentered = isTitleCentered
             )
         }

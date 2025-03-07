@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.room.Room
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
@@ -668,7 +669,10 @@ internal class VolvoxHubService {
         scope.launch {
             when (val result = hubApiRepository.getTickets()) {
                 is Ok -> successCallback(result.value)
-                is Err -> errorCallback.invoke(result.error.message)
+                is Err -> {
+                    errorCallback.invoke(result.error.message)
+                    Log.d("error message", result.error.message.toString())
+                }
             }
         }
     }

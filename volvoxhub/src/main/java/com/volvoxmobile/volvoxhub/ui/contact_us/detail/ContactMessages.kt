@@ -10,12 +10,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.volvoxmobile.volvoxhub.R
+import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.ui.contact_us.HubFonts
 import com.volvoxmobile.volvoxhub.ui.contact_us.detail.component.ContactMessage
 import com.volvoxmobile.volvoxhub.ui.contact_us.detail.component.UserMessage
@@ -28,6 +31,7 @@ fun ContactMessages(
     fonts: HubFonts
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     if (messageList.isEmpty()) {
         Column(
             modifier = modifier
@@ -41,7 +45,7 @@ fun ContactMessages(
                 contentDescription = "Bot"
             )
             Text(
-                text = "How can i help you",
+                text = Localizations.get(context,"how_can_ı_help_you"),
                 fontSize = 16.sp,
                 fontFamily = fonts.semiBold
             )
@@ -58,13 +62,17 @@ fun ContactMessages(
             messageList.forEach {
                 when (it.author) {
                     Author.GPT -> ContactMessage(
-                        modifier = Modifier.align(Alignment.Start).padding(bottom = 24.dp),
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(bottom = 24.dp),
                         message = it,
                         fonts = fonts
                     )
 
                     Author.USER -> UserMessage(
-                        modifier = Modifier.align(Alignment.End).padding(bottom = 24.dp),
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(bottom = 24.dp),
                         message = it,
                         fonts = fonts
                     )
