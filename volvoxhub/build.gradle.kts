@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kapt)
     `maven-publish`
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 android {
@@ -32,7 +33,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 
     compileOptions {
@@ -115,6 +116,17 @@ dependencies {
     implementation(platform(libs.firebaseBom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Hilt
+    implementation (libs.hilt)
+    kapt (libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation)
+
+    // Coil
+    implementation(libs.coil)
 }
 
 kapt {

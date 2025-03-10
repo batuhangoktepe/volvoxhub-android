@@ -6,6 +6,7 @@ plugins {
     id("maven-publish")
     alias(libs.plugins.google.gms.google.services)
     id("com.google.firebase.crashlytics")
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 android {
@@ -50,7 +51,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 
     packaging {
@@ -84,6 +85,9 @@ dependencies {
 
     // Gson
     implementation(libs.gson)
+
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 }
 
 kapt {
