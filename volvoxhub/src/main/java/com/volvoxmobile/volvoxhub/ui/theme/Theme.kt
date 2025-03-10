@@ -34,7 +34,7 @@ private val LightColorScheme =
     )
 
 @Composable
-fun VolvoxHubTheme(
+fun HubTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

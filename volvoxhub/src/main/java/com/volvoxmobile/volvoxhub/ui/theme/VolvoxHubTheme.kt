@@ -106,8 +106,8 @@ val LocalHubColors = staticCompositionLocalOf {
 @Composable
 fun VolvoxHubTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    darkColors: VolvoxHubColors,
-    lightColors: VolvoxHubColors,
+    darkColors: VolvoxHubColors = VolvoxHubColors.create(Theme.DARK),
+    lightColors: VolvoxHubColors = VolvoxHubColors.create(Theme.LIGHT),
     content: @Composable () -> Unit
 ) {
     val customColors = if (darkTheme) darkColors
