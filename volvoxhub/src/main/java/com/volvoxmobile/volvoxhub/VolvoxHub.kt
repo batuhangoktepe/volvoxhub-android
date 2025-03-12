@@ -7,7 +7,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.google.firebase.auth.FirebaseUser
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.models.StoreProduct
@@ -18,14 +20,18 @@ import com.revenuecat.purchases.ui.revenuecatui.PaywallDialog
 import com.revenuecat.purchases.ui.revenuecatui.PaywallDialogOptions
 import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInCallback
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopupConfig
+import com.volvoxmobile.volvoxhub.ui.login.GoogleSignInButton
 import com.volvoxmobile.volvoxhub.ui.web.WebScreen
 
 class VolvoxHub private constructor(
@@ -46,6 +52,7 @@ class VolvoxHub private constructor(
     init {
         volvoxHubService.initialize(configuration)
     }
+
 
     companion object {
         @Volatile
@@ -148,6 +155,37 @@ class VolvoxHub private constructor(
             )
 
         }
+
+        @Composable
+        fun ShowLogInWithGoogle(
+            modifier: Modifier,
+            successCallback: (SocialLoginRequest) -> Unit,
+            errorCallback: (String?) -> Unit
+        ){
+            GoogleSignInButton(
+                modifier = modifier
+            ) {
+                GoogleSignIn.getInstance().setCallback(
+                    callback = object : GoogleSignInCallback {
+                        override fun onSignInSuccess(user: FirebaseUser) {
+                            VolvoxHubService.instance.socialLogin(
+                                accountId = user.uid,
+                                provider = user.providerId,
+                                token = user.getIdToken(true).result.token ?: "",
+                                errorCallback = errorCallback,
+                                successCallback = successCallback
+
+                            )
+                        }
+                        override fun onSignInError(exception: Exception) {
+                            errorCallback(exception.message)
+                        }
+                    }
+                )
+                GoogleSignIn.getInstance().signIn()
+            }
+        }
+
     }
 
     /**
@@ -299,4 +337,5 @@ class VolvoxHub private constructor(
         } ?: false
         return trialCheck.not()
     }
+
 }

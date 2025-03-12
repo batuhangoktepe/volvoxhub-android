@@ -29,6 +29,8 @@ import com.volvoxmobile.volvoxhub.common.extensions.getAdvertisingId
 import com.volvoxmobile.volvoxhub.common.extensions.getScreenDpi
 import com.volvoxmobile.volvoxhub.common.extensions.getScreenResolution
 import com.volvoxmobile.volvoxhub.common.extensions.getUserRegion
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInConfig
 import com.volvoxmobile.volvoxhub.common.util.DeviceUuidFactory
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.StringUtils
@@ -43,6 +45,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketReq
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
@@ -328,6 +331,13 @@ internal class VolvoxHubService {
         initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty(), response.vid)
         saveConfigUrls(response.config)
         hubInitListener.onInitCompleted(volvoxHubResponse)
+        GoogleSignIn.initialize(
+            config = GoogleSignInConfig(
+                context = configuration.context,
+                serverClientId = GoogleSignIn.getServerClientIdFromResources(context = configuration.context),
+                filterByAuthorizedAccounts = true
+            )
+        )
     }
 
     /**
@@ -716,6 +726,22 @@ internal class VolvoxHubService {
             val newTicketRequest = NewTicketRequest(category, message)
             when (val result = hubApiRepository.createNewTicket(newTicketRequest)) {
                 is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun socialLogin(
+        accountId: String,
+        provider: String,
+        token: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (SocialLoginRequest) -> Unit
+    ) {
+        scope.launch {
+            val socialLoginRequest = SocialLoginRequest(accountId, provider, token)
+            when(val result = hubApiRepository.socialLogin(socialLoginRequest)){
+                is Ok -> successCallback(socialLoginRequest)
                 is Err -> errorCallback(result.error.message)
             }
         }

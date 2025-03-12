@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -21,16 +22,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.volvoxmobile.volvoxhub.R
+import com.volvoxmobile.volvoxhub.common.extensions.safeClick
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 
 @Composable
-fun GoogleSignInButton(modifier: Modifier = Modifier) {
+fun GoogleSignInButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     val context = LocalContext.current
     Row(
         modifier = modifier
             .background(Color.White, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .padding(vertical = 13.dp),
+            .padding(vertical = 13.dp)
+            .safeClick {
+                onClick()
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -50,5 +58,5 @@ fun GoogleSignInButton(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun PreviewGoogleSignInButton(modifier: Modifier = Modifier) {
-    GoogleSignInButton()
+    GoogleSignInButton(modifier = Modifier) {}
 }
