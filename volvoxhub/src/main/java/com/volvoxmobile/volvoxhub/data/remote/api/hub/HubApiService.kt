@@ -5,12 +5,19 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResp
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.google.gson.JsonObject
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface HubApiService {
     @POST("device/register")
@@ -29,4 +36,21 @@ interface HubApiService {
 
     @POST("promo-codes/use")
     suspend fun usePromoCode(@Body promoCodeRequest: PromoCodeRequest): PromoCodeResponse
+
+    @GET("support/tickets")
+    suspend fun getTickets(): SupportTicketsResponse
+
+    @GET("support/tickets/{ticket_id}")
+    suspend fun getTicket(
+        @Path("ticket_id") ticketId: String
+    ): SupportTicketResponse
+
+    @POST("support/tickets")
+    suspend fun createNewTicket(@Body newTicketRequest: NewTicketRequest): CreateNewTicketResponse
+
+    @POST("support/tickets/{ticket_id}/messages")
+    suspend fun createNewMessage(
+        @Path("ticket_id") ticketId: String,
+        @Body messageTicketRequest: MessageTicketRequest
+    ): CreateNewMessageResponse
 }
