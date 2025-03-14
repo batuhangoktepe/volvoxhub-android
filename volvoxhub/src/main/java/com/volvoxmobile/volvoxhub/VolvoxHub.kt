@@ -5,11 +5,11 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.google.firebase.auth.FirebaseUser
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.models.StoreProduct
@@ -92,8 +92,8 @@ class VolvoxHub private constructor(
             contentColor: Color = Color.White,
         ) {
             WebScreen(
-                url = url, 
-                title = title, 
+                url = url,
+                title = title,
                 onClose = onClose,
                 backgroundColor = backgroundColor,
                 contentColor = contentColor
@@ -159,29 +159,29 @@ class VolvoxHub private constructor(
         @Composable
         fun ShowLogInWithGoogle(
             modifier: Modifier,
-            successCallback: (SocialLoginRequest) -> Unit,
+            successCallback: () -> Unit,
             errorCallback: (String?) -> Unit
-        ){
+        ) {
+            GoogleSignIn.getInstance().setCallback(
+                callback = object : GoogleSignInCallback {
+                    override fun onSignInSuccess(socialLoginRequest: SocialLoginRequest) {
+                        VolvoxHubService.instance.socialLogin(
+                            socialLoginRequest = socialLoginRequest,
+                            errorCallback = errorCallback,
+                            successCallback = successCallback
+                        )
+                        Log.d("TAG2", socialLoginRequest.toString())
+                    }
+
+                    override fun onSignInError(exception: Exception) {
+                        errorCallback(exception.message)
+                        Log.d("TAG2", exception.toString())
+                    }
+                }
+            )
             GoogleSignInButton(
                 modifier = modifier
             ) {
-                GoogleSignIn.getInstance().setCallback(
-                    callback = object : GoogleSignInCallback {
-                        override fun onSignInSuccess(user: FirebaseUser) {
-                            VolvoxHubService.instance.socialLogin(
-                                accountId = user.uid,
-                                provider = user.providerId,
-                                token = user.getIdToken(true).result.token ?: "",
-                                errorCallback = errorCallback,
-                                successCallback = successCallback
-
-                            )
-                        }
-                        override fun onSignInError(exception: Exception) {
-                            errorCallback(exception.message)
-                        }
-                    }
-                )
                 GoogleSignIn.getInstance().signIn()
             }
         }
@@ -275,11 +275,15 @@ class VolvoxHub private constructor(
      * Calls `successCallback` on success with `PromoCodeResponse`,
      * otherwise calls `errorCallback`.
      */
-    fun usePromoCode(code: String, errorCallback: (String?) -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+    fun usePromoCode(
+        code: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (PromoCodeResponse) -> Unit
+    ) {
         volvoxHubService.usePromoCode(code, errorCallback, successCallback)
     }
 
-        /**
+    /**
      * Launches the default email client to send an email.
      *
      * This function uses an implicit intent with the `mailto:` URI scheme to open the default email app installed
@@ -330,11 +334,12 @@ class VolvoxHub private constructor(
      * Revenuecat Trial Check
      */
     fun checkIfUserUsedTrialForPackage(product: StoreProduct): Boolean {
-        val trialCheck = product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
-            offer.pricingPhases.pricingPhaseList.any() { phase ->
-                phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
-            }
-        } ?: false
+        val trialCheck =
+            product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
+                offer.pricingPhases.pricingPhaseList.any() { phase ->
+                    phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
+                }
+            } ?: false
         return trialCheck.not()
     }
 

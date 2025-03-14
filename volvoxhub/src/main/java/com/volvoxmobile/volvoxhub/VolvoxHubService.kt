@@ -331,13 +331,11 @@ internal class VolvoxHubService {
         initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty(), response.vid)
         saveConfigUrls(response.config)
         hubInitListener.onInitCompleted(volvoxHubResponse)
-        GoogleSignIn.initialize(
+        /*GoogleSignIn.initialize(
             config = GoogleSignInConfig(
-                context = configuration.context,
-                serverClientId = GoogleSignIn.getServerClientIdFromResources(context = configuration.context),
-                filterByAuthorizedAccounts = true
+
             )
-        )
+        )*/
     }
 
     /**
@@ -732,16 +730,13 @@ internal class VolvoxHubService {
     }
 
     fun socialLogin(
-        accountId: String,
-        provider: String,
-        token: String,
+        socialLoginRequest: SocialLoginRequest,
         errorCallback: (String?) -> Unit,
-        successCallback: (SocialLoginRequest) -> Unit
+        successCallback: () -> Unit
     ) {
         scope.launch {
-            val socialLoginRequest = SocialLoginRequest(accountId, provider, token)
             when(val result = hubApiRepository.socialLogin(socialLoginRequest)){
-                is Ok -> successCallback(socialLoginRequest)
+                is Ok -> successCallback()
                 is Err -> errorCallback(result.error.message)
             }
         }

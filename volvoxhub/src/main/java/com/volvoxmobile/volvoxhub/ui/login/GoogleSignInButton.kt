@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.volvoxmobile.volvoxhub.R
 import com.volvoxmobile.volvoxhub.common.extensions.safeClick
 import com.volvoxmobile.volvoxhub.common.util.Localizations
+import com.volvoxmobile.volvoxhub.ui.theme.regularFont
 
 @Composable
 fun GoogleSignInButton(

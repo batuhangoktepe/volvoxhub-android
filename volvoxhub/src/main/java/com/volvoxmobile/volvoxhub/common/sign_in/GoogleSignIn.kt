@@ -1,46 +1,32 @@
 package com.volvoxmobile.volvoxhub.common.sign_in
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import androidx.credentials.GetCredentialResponse
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
-/**
- * Configuration class for Google Sign-In
- */
+
 data class GoogleSignInConfig(
     val context: Context,
-    val serverClientId: String?,
-    val filterByAuthorizedAccounts: Boolean = true
+    val serverClientId: String?
 )
 
-/**
- * Callback interface for Google Sign-In events
- */
 interface GoogleSignInCallback {
-    fun onSignInSuccess(user: FirebaseUser)
+    fun onSignInSuccess(socialLoginRequest: SocialLoginRequest)
     fun onSignInError(exception: Exception)
 }
 
 class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
-    private lateinit var auth: FirebaseAuth
-    private lateinit var credentialManager: CredentialManager
     private val scope = CoroutineScope(Dispatchers.IO + Job())
     private var callback: GoogleSignInCallback? = null
 
@@ -54,7 +40,6 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
             return instance ?: synchronized(this) {
                 instance ?: GoogleSignIn(config).also {
                     instance = it
-                    it.init()
                 }
             }
         }
@@ -62,49 +47,6 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
         fun getInstance(): GoogleSignIn {
             return instance ?: throw IllegalStateException("GoogleSignIn must be initialized first")
         }
-
-        /**
-         * Helper method to get the server client ID from google-services.json
-         * @param context Application context
-         * @return Server client ID or null if not found
-         */
-        fun getServerClientIdFromResources(context: Context): String? {
-            return try {
-                val resources = context.resources
-                val resourceId = resources.getIdentifier("google_services", "raw", context.packageName)
-                if (resourceId == 0) {
-                    Log.e(TAG, "google-services.json not found in raw resources")
-                    return null
-                }
-
-                val inputStream = resources.openRawResource(resourceId)
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                val jsonString = reader.readText()
-                reader.close()
-
-                val jsonObject = JSONObject(jsonString)
-                val client = jsonObject.getJSONObject("client")
-                val clientInfo = client.getJSONArray("oauth_client")
-
-                for (i in 0 until clientInfo.length()) {
-                    val item = clientInfo.getJSONObject(i)
-                    if (item.has("client_type") && item.getInt("client_type") == 3) {
-                        return item.getString("client_id")
-                    }
-                }
-
-                Log.e(TAG, "Web client ID not found in google-services.json")
-                null
-            } catch (e: Exception) {
-                Log.e(TAG, "Error reading google-services.json: ${e.message}")
-                null
-            }
-        }
-    }
-
-    private fun init() {
-        auth = FirebaseAuth.getInstance()
-        credentialManager = CredentialManager.create(config.context)
     }
 
     fun setCallback(callback: GoogleSignInCallback) {
@@ -112,56 +54,69 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
     }
 
     fun signIn() {
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setServerClientId(getServerClientIdFromResources(config.context) ?: "")
-            .setFilterByAuthorizedAccounts(config.filterByAuthorizedAccounts)
-            .build()
 
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
+
+        val serverClientId = config.serverClientId
+            ?: throw IllegalStateException("Server Client ID must be provided for Google Sign In")
+
+        val signInWithGoogleOption: GetSignInWithGoogleOption =
+            GetSignInWithGoogleOption.Builder(
+                serverClientId
+            ).build()
+
+        val request: GetCredentialRequest =
+            GetCredentialRequest.Builder()
+                .addCredentialOption(signInWithGoogleOption)
+                .build()
 
         scope.launch {
             try {
+                val credentialManager =
+                    CredentialManager.create(context = config.context)
                 val result = credentialManager.getCredential(
+                    request = request,
                     context = config.context,
-                    request = request
                 )
-                handleSignIn(result.credential)
+                handleSignIn(result) {
+                    callback?.onSignInSuccess(it)
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Couldn't retrieve user's credentials: ${e.localizedMessage}")
                 callback?.onSignInError(e)
             }
         }
     }
 
-    fun signOut() {
-        auth.signOut()
-    }
+    private fun handleSignIn(
+        result: GetCredentialResponse,
+        onSignInSuccess: (SocialLoginRequest) -> Unit
+    ) {
+        val verifier = GoogleIdTokenVerifier.initialize(config.serverClientId ?: "")
 
-    fun getCurrentUser(): FirebaseUser? = auth.currentUser
+        when (val credential = result.credential) {
+            is CustomCredential -> {
+                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    try {
+                        scope.launch {
+                            Log.d("TAG2", credential.data.toString())
+                            val googleIdTokenCredential =
+                                GoogleIdTokenCredential.createFrom(credential.data)
+                            val verify = verifier.verify(googleIdTokenCredential.idToken)
+                            val socialLoginRequest = SocialLoginRequest(
+                                accountId = verify?.getPayload()?.getSubject() ?: "",
+                                provider = "google",
+                                token = googleIdTokenCredential.idToken
+                            )
+                            onSignInSuccess(socialLoginRequest)
+                        }
 
-    private fun handleSignIn(credential: Credential) {
-        if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            firebaseAuthWithGoogle(googleIdTokenCredential.idToken)
-        } else {
-            val error = IllegalStateException("Credential is not of type Google ID!")
-            Log.w(TAG, error.message ?: "")
-            callback?.onSignInError(error)
-        }
-    }
+                    } catch (e: GoogleIdTokenParsingException) {
+                        Log.e("TAG2", "Received an invalid google id token response", e)
+                    }
+                }
+            }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "signInWithCredential:success")
-                val user = auth.currentUser
-                user?.let { callback?.onSignInSuccess(it) }
-            } else {
-                Log.w(TAG, "signInWithCredential:failure", task.exception)
-                task.exception?.let { callback?.onSignInError(it) }
+            else -> {
+                Log.e("TAG2", "Unexpected type of credential")
             }
         }
     }
