@@ -5,9 +5,12 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.models.StoreProduct
@@ -18,14 +21,19 @@ import com.revenuecat.purchases.ui.revenuecatui.PaywallDialog
 import com.revenuecat.purchases.ui.revenuecatui.PaywallDialogOptions
 import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInCallback
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInConfig
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopupConfig
+import com.volvoxmobile.volvoxhub.ui.login.GoogleSignInButton
 import com.volvoxmobile.volvoxhub.ui.web.WebScreen
 
 class VolvoxHub private constructor(
@@ -46,6 +54,7 @@ class VolvoxHub private constructor(
     init {
         volvoxHubService.initialize(configuration)
     }
+
 
     companion object {
         @Volatile
@@ -85,8 +94,8 @@ class VolvoxHub private constructor(
             contentColor: Color = Color.White,
         ) {
             WebScreen(
-                url = url, 
-                title = title, 
+                url = url,
+                title = title,
                 onClose = onClose,
                 backgroundColor = backgroundColor,
                 contentColor = contentColor
@@ -148,6 +157,40 @@ class VolvoxHub private constructor(
             )
 
         }
+
+        @Composable
+        fun ShowLogInWithGoogle(
+            modifier: Modifier,
+            successCallback: () -> Unit,
+            errorCallback: (String?) -> Unit
+        ) {
+            val context = LocalContext.current
+            GoogleSignIn.initialize(
+                config = GoogleSignInConfig(
+                    context = context
+                )
+            )
+            GoogleSignIn.getInstance().setCallback(
+                callback = object : GoogleSignInCallback {
+                    override fun onSignInSuccess(socialLoginRequest: SocialLoginRequest) {
+                        VolvoxHubService.instance.socialLogin(
+                            socialLoginRequest = socialLoginRequest,
+                            errorCallback = errorCallback,
+                            successCallback = successCallback
+                        )
+                    }
+                    override fun onSignInError(exception: Exception) {
+                        errorCallback(exception.message)
+                    }
+                }
+            )
+            GoogleSignInButton(
+                modifier = modifier
+            ) {
+                GoogleSignIn.getInstance().signIn()
+            }
+        }
+
     }
 
     /**
@@ -237,11 +280,15 @@ class VolvoxHub private constructor(
      * Calls `successCallback` on success with `PromoCodeResponse`,
      * otherwise calls `errorCallback`.
      */
-    fun usePromoCode(code: String, errorCallback: (String?) -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+    fun usePromoCode(
+        code: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (PromoCodeResponse) -> Unit
+    ) {
         volvoxHubService.usePromoCode(code, errorCallback, successCallback)
     }
 
-        /**
+    /**
      * Launches the default email client to send an email.
      *
      * This function uses an implicit intent with the `mailto:` URI scheme to open the default email app installed
@@ -292,11 +339,13 @@ class VolvoxHub private constructor(
      * Revenuecat Trial Check
      */
     fun checkIfUserUsedTrialForPackage(product: StoreProduct): Boolean {
-        val trialCheck = product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
-            offer.pricingPhases.pricingPhaseList.any() { phase ->
-                phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
-            }
-        } ?: false
+        val trialCheck =
+            product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
+                offer.pricingPhases.pricingPhaseList.any() { phase ->
+                    phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
+                }
+            } ?: false
         return trialCheck.not()
     }
+
 }

@@ -12,6 +12,7 @@ import com.google.gson.JsonObject
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
@@ -50,5 +51,8 @@ class HubApiRepositoryImpl(
         messageTicketRequest: MessageTicketRequest
     ): GenericResult<CreateNewMessageResponse> =
         handleHubRequest { hubApiService.createNewMessage(ticketId, messageTicketRequest) }
+
+    override suspend fun socialLogin(socialLoginRequest: SocialLoginRequest): GenericResult<Boolean> =
+        handleHubRequest { hubApiService.socialLogin(socialLoginRequest) }
 
 }
