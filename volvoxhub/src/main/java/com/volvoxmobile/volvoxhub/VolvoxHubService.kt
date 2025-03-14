@@ -331,11 +331,6 @@ internal class VolvoxHubService {
         initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty(), response.vid)
         saveConfigUrls(response.config)
         hubInitListener.onInitCompleted(volvoxHubResponse)
-        /*GoogleSignIn.initialize(
-            config = GoogleSignInConfig(
-
-            )
-        )*/
     }
 
     /**

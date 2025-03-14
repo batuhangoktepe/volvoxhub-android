@@ -9,6 +9,7 @@ import androidx.credentials.GetCredentialResponse
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.volvoxmobile.volvoxhub.common.util.Constants
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 
 data class GoogleSignInConfig(
     val context: Context,
-    val serverClientId: String?
+    val serverClientId: String = Constants.WEB_CLIENT_ID
 )
 
 interface GoogleSignInCallback {
@@ -31,8 +32,6 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
     private var callback: GoogleSignInCallback? = null
 
     companion object {
-        private const val TAG = "GoogleSignIn"
-
         @Volatile
         private var instance: GoogleSignIn? = null
 
@@ -54,10 +53,7 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
     }
 
     fun signIn() {
-
-
         val serverClientId = config.serverClientId
-            ?: throw IllegalStateException("Server Client ID must be provided for Google Sign In")
 
         val signInWithGoogleOption: GetSignInWithGoogleOption =
             GetSignInWithGoogleOption.Builder(
@@ -77,9 +73,15 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
                     request = request,
                     context = config.context,
                 )
-                handleSignIn(result) {
-                    callback?.onSignInSuccess(it)
-                }
+                handleSignIn(
+                    result,
+                    onSignInError = { exception ->
+                        callback?.onSignInError(exception)
+                    },
+                    onSignInSuccess = { socialLoginRequest ->
+                        callback?.onSignInSuccess(socialLoginRequest)
+                    }
+                )
             } catch (e: Exception) {
                 callback?.onSignInError(e)
             }
@@ -88,35 +90,33 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
 
     private fun handleSignIn(
         result: GetCredentialResponse,
+        onSignInError: (Exception) -> Unit?,
         onSignInSuccess: (SocialLoginRequest) -> Unit
     ) {
-        val verifier = GoogleIdTokenVerifier.initialize(config.serverClientId ?: "")
+        val verifier = GoogleIdTokenVerifier.initialize(config.serverClientId)
 
         when (val credential = result.credential) {
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
                         scope.launch {
-                            Log.d("TAG2", credential.data.toString())
                             val googleIdTokenCredential =
                                 GoogleIdTokenCredential.createFrom(credential.data)
-                            val verify = verifier.verify(googleIdTokenCredential.idToken)
+                            val payload = verifier.verify(googleIdTokenCredential.idToken)
                             val socialLoginRequest = SocialLoginRequest(
-                                accountId = verify?.getPayload()?.getSubject() ?: "",
+                                accountId = payload?.getPayload()?.getSubject() ?: "",
                                 provider = "google",
                                 token = googleIdTokenCredential.idToken
                             )
                             onSignInSuccess(socialLoginRequest)
                         }
-
                     } catch (e: GoogleIdTokenParsingException) {
-                        Log.e("TAG2", "Received an invalid google id token response", e)
+                        onSignInError(e)
                     }
                 }
             }
-
             else -> {
-                Log.e("TAG2", "Unexpected type of credential")
+                Log.e("GoogleSignIn", "Unexpected type of credential")
             }
         }
     }

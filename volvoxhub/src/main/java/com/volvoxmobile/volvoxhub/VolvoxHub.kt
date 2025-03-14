@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.models.StoreProduct
@@ -22,6 +23,7 @@ import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInCallback
+import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInConfig
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
@@ -162,6 +164,12 @@ class VolvoxHub private constructor(
             successCallback: () -> Unit,
             errorCallback: (String?) -> Unit
         ) {
+            val context = LocalContext.current
+            GoogleSignIn.initialize(
+                config = GoogleSignInConfig(
+                    context = context
+                )
+            )
             GoogleSignIn.getInstance().setCallback(
                 callback = object : GoogleSignInCallback {
                     override fun onSignInSuccess(socialLoginRequest: SocialLoginRequest) {
@@ -170,12 +178,9 @@ class VolvoxHub private constructor(
                             errorCallback = errorCallback,
                             successCallback = successCallback
                         )
-                        Log.d("TAG2", socialLoginRequest.toString())
                     }
-
                     override fun onSignInError(exception: Exception) {
                         errorCallback(exception.message)
-                        Log.d("TAG2", exception.toString())
                     }
                 }
             )
