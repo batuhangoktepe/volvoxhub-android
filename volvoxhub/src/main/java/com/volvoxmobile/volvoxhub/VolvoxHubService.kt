@@ -48,6 +48,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
@@ -730,8 +731,20 @@ internal class VolvoxHubService {
         successCallback: () -> Unit
     ) {
         scope.launch {
-            when(val result = hubApiRepository.socialLogin(socialLoginRequest)){
+            when (val result = hubApiRepository.socialLogin(socialLoginRequest)) {
                 is Ok -> successCallback()
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun deleteAccount(
+        errorCallback: (String?) -> Unit,
+        successCallback: (DeleteAccountResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.deleteAccount()) {
+                is Ok -> successCallback(result.value)
                 is Err -> errorCallback(result.error.message)
             }
         }
