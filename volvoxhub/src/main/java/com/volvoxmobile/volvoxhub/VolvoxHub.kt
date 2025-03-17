@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.PurchasesError
+import com.revenuecat.purchases.Store
 import com.revenuecat.purchases.models.StoreProduct
 import com.revenuecat.purchases.models.StoreTransaction
 import com.revenuecat.purchases.models.googleProduct
@@ -24,6 +25,7 @@ import com.volvoxmobile.volvoxhub.billing.RcBillingHelper
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInCallback
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInConfig
+import com.volvoxmobile.volvoxhub.common.util.AppProduct
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
@@ -358,5 +360,36 @@ class VolvoxHub private constructor(
             successCallback = successCallback,
             errorCallback = errorCallback
         )
+    }
+
+    fun getAppProduct(productIdentifier: String): AppProduct? {
+        val productId = volvoxHubService.getAppProductId(productIdentifier)
+        Log.d("productss",productId.toString())
+        var product:StoreProduct? = null
+        productId?.let {
+            fetchConsumableProducts { products ->
+                product = products.first {
+                    it.id == productId
+                }
+            }
+        }
+        /*return AppProduct(
+            appId = ,
+            createdAt = ,
+            displayName = ,
+            duration = ,
+            gracePeriod = ,
+            id = ,
+            importType = ,
+            initialBonus =,
+            isConsumable = ,
+            renewalBonus = ,
+            revenueCatId = ,
+            storeIdentifier =,
+            trialDuration =,
+            type = ,
+            updatedAt =
+        )*/
+        return null
     }
 }

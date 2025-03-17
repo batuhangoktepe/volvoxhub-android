@@ -1,6 +1,8 @@
 package com.volvoxmobile.volvoxhub.domain.local.preferences
 
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.volvoxmobile.volvoxhub.common.extensions.getStringOrEmpty
 import com.volvoxmobile.volvoxhub.common.extensions.getStringOrNull
 
@@ -10,6 +12,8 @@ class PreferencesRepositoryImpl(
     private val sharedPreferencesEditor: SharedPreferences.Editor by lazy {
         sharedPreferences.edit()
     }
+
+    private val gson by lazy { Gson() }
 
     override fun savePushToken(token: String) {
         with(sharedPreferencesEditor) {
@@ -111,6 +115,20 @@ class PreferencesRepositoryImpl(
 
     override fun getSupportEmail(): String? = sharedPreferences.getStringOrNull(SUPPORT_EMAIL)
 
+    override fun saveRemoteConfig(remoteConfig: JsonObject) {
+        with(sharedPreferencesEditor) {
+            putString(REMOTE_CONFIG, gson.toJson(remoteConfig))
+            commit()
+        }
+    }
+
+    override fun getRemoteConfig(): JsonObject? {
+        val remoteConfigJson = sharedPreferences.getStringOrNull(REMOTE_CONFIG)
+        return remoteConfigJson?.let {
+            gson.fromJson(it, JsonObject::class.java)
+        }
+    }
+
     companion object {
         private const val ADVERTISING_ID = "advertising_id"
         private const val PUSH_TOKEN = "push_token"
@@ -123,5 +141,6 @@ class PreferencesRepositoryImpl(
         private const val V_ID = "v_id"
         private const val SUPPORT_EMAIL = "support_email"
         private const val SUPPORTED_LANGUAGES = "supported_languages"
+        private const val REMOTE_CONFIG = "remote_config"
     }
 }

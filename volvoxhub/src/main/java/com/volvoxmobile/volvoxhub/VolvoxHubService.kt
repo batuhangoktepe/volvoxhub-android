@@ -31,6 +31,7 @@ import com.volvoxmobile.volvoxhub.common.extensions.getScreenResolution
 import com.volvoxmobile.volvoxhub.common.extensions.getUserRegion
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInConfig
+import com.volvoxmobile.volvoxhub.common.util.AppProduct
 import com.volvoxmobile.volvoxhub.common.util.DeviceUuidFactory
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.StringUtils
@@ -312,10 +313,10 @@ internal class VolvoxHubService {
                 remoteConfig = response.remoteConfig,
                 vId = response.vid
             )
-
         saveVID(response.vid)
         saveSupportedLanguages(response.config.supportedLanguages)
         saveSupportEmail(response.config.supportEmail.orEmpty())
+        response.remoteConfig?.let { preferencesRepository.saveRemoteConfig(it) }
         initializeFirebase()
         initializeFacebook(
             response.thirdParty.facebookAppId.orEmpty(),
@@ -748,5 +749,10 @@ internal class VolvoxHubService {
                 is Err -> errorCallback(result.error.message)
             }
         }
+    }
+
+    fun getAppProductId(productIdentifier: String): String? {
+        val remoteConfig = preferencesRepository.getRemoteConfig()
+        return remoteConfig?.get(productIdentifier)?.asString
     }
 }
