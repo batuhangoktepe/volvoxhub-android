@@ -15,6 +15,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
@@ -54,5 +55,8 @@ class HubApiRepositoryImpl(
 
     override suspend fun socialLogin(socialLoginRequest: SocialLoginRequest): GenericResult<Boolean> =
         handleHubRequest { hubApiService.socialLogin(socialLoginRequest) }
+
+    override suspend fun deleteAccount(): GenericResult<DeleteAccountResponse> =
+        handleHubRequest { hubApiService.deleteAccount() }
 
 }
