@@ -33,6 +33,7 @@ import com.volvoxmobile.volvoxhub.common.util.NotificationPermissionStatus
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
@@ -191,6 +192,7 @@ class VolvoxHub private constructor(
                             successCallback = successCallback
                         )
                     }
+
                     override fun onSignInError(exception: Exception) {
                         errorCallback(exception.message)
                     }
@@ -360,6 +362,15 @@ class VolvoxHub private constructor(
         return trialCheck.not()
     }
 
+    fun deleteAccount(
+        errorCallback: (String?) -> Unit,
+        successCallback: (DeleteAccountResponse) -> Unit
+    ) {
+        volvoxHubService.deleteAccount(
+            successCallback = successCallback,
+            errorCallback = errorCallback
+        )
+    }
     /**
      * Checks the notification permission status.
      *

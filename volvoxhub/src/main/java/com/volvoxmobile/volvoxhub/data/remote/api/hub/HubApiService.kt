@@ -11,11 +11,13 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
 import okhttp3.ResponseBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -59,4 +61,7 @@ interface HubApiService {
     suspend fun socialLogin(
         @Body socialLoginRequest: SocialLoginRequest
     ): Boolean
+
+    @DELETE("device")
+    suspend fun deleteAccount() : DeleteAccountResponse
 }
