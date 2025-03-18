@@ -1,5 +1,7 @@
 package com.volvoxmobile.volvoxhub.domain.local.preferences
 
+import com.google.gson.JsonObject
+
 interface PreferencesRepository {
     fun savePushToken(token: String)
 

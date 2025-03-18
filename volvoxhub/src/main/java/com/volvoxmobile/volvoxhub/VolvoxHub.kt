@@ -34,6 +34,7 @@ import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
@@ -460,4 +461,14 @@ class VolvoxHub private constructor(
         }
     }
 
+
+    fun getProducts(
+        successCallback: (GetProductsResponse) -> Unit,
+        errorCallback: (String?) -> Unit
+    ) {
+        volvoxHubService.getProducts(
+            errorCallback = errorCallback,
+            successCallback = successCallback
+        )
+    }
 }

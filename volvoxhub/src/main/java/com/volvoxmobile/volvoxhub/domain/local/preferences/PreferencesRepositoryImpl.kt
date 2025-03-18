@@ -1,6 +1,8 @@
 package com.volvoxmobile.volvoxhub.domain.local.preferences
 
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.volvoxmobile.volvoxhub.common.extensions.getStringOrEmpty
 import com.volvoxmobile.volvoxhub.common.extensions.getStringOrNull
 
@@ -10,6 +12,8 @@ class PreferencesRepositoryImpl(
     private val sharedPreferencesEditor: SharedPreferences.Editor by lazy {
         sharedPreferences.edit()
     }
+
+    private val gson by lazy { Gson() }
 
     override fun savePushToken(token: String) {
         with(sharedPreferencesEditor) {
