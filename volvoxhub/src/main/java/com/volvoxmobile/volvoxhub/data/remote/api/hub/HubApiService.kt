@@ -12,6 +12,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginReque
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
@@ -64,4 +65,7 @@ interface HubApiService {
 
     @DELETE("device")
     suspend fun deleteAccount() : DeleteAccountResponse
+
+    @GET("product/app")
+    suspend fun getProducts(): GetProductsResponse
 }

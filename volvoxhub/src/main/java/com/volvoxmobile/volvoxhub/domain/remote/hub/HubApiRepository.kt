@@ -11,6 +11,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResp
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
@@ -28,16 +29,14 @@ interface HubApiRepository {
     suspend fun getTicket(
         ticketId: String
     ): GenericResult<SupportTicketResponse>
-
     suspend fun createNewTicket(newTicketRequest: NewTicketRequest): GenericResult<CreateNewTicketResponse>
     suspend fun createNewMessage(
         ticketId: String,
         messageTicketRequest: MessageTicketRequest
     ): GenericResult<CreateNewMessageResponse>
-
     suspend fun socialLogin(
         socialLoginRequest: SocialLoginRequest
     ):GenericResult<Boolean>
-
     suspend fun deleteAccount():GenericResult<DeleteAccountResponse>
+    suspend fun getProducts():GenericResult<GetProductsResponse>
 }

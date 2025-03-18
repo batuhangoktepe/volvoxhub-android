@@ -29,9 +29,6 @@ import com.volvoxmobile.volvoxhub.common.extensions.getAdvertisingId
 import com.volvoxmobile.volvoxhub.common.extensions.getScreenDpi
 import com.volvoxmobile.volvoxhub.common.extensions.getScreenResolution
 import com.volvoxmobile.volvoxhub.common.extensions.getUserRegion
-import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
-import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInConfig
-import com.volvoxmobile.volvoxhub.common.util.AppProduct
 import com.volvoxmobile.volvoxhub.common.util.DeviceUuidFactory
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.StringUtils
@@ -50,6 +47,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginReque
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
@@ -751,8 +749,15 @@ internal class VolvoxHubService {
         }
     }
 
-    fun getAppProductId(productIdentifier: String): String? {
-        val remoteConfig = preferencesRepository.getRemoteConfig()
-        return remoteConfig?.get(productIdentifier)?.asString
+    fun getProducts(
+        errorCallback: (String?) -> Unit,
+        successCallback: (GetProductsResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.getProducts()) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
     }
 }
