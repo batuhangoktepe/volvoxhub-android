@@ -388,22 +388,21 @@ class VolvoxHub private constructor(
      *   - DENIED: Permission denied
      */
     fun checkNotificationPermissionStatus(
-        context: Context,
-        activity: Activity? = null
+        context: Context
     ): NotificationPermissionStatus {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val permissionState = ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
             )
+
+            val hasRequestedBefore = volvoxHubService.getNotificationPermissionState()
+            
             return when {
                 permissionState == PackageManager.PERMISSION_GRANTED -> {
                     NotificationPermissionStatus.GRANTED
                 }
-                activity != null && ActivityCompat.shouldShowRequestPermissionRationale(
-                    activity,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) -> {
+                hasRequestedBefore -> {
                     NotificationPermissionStatus.DENIED
                 }
                 else -> {
@@ -436,7 +435,7 @@ class VolvoxHub private constructor(
     ) {
         notificationPermissionCallbacks[requestCode] = callback
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val permissionState = checkNotificationPermissionStatus(activity, activity)
+            val permissionState = checkNotificationPermissionStatus(activity)
 
             when (permissionState) {
                 NotificationPermissionStatus.GRANTED -> {
@@ -448,6 +447,8 @@ class VolvoxHub private constructor(
                     notificationPermissionCallbacks.remove(requestCode)
                 }
                 else -> {
+                    volvoxHubService.saveNotificationPermissionState(true)
+                    
                     ActivityCompat.requestPermissions(
                         activity,
                         arrayOf(Manifest.permission.POST_NOTIFICATIONS),

@@ -46,4 +46,8 @@ interface PreferencesRepository {
     fun saveSupportedLanguages(languages: List<String>?)
 
     fun getSupportedLanguages(): List<String>?
+
+    fun saveNotificationPermissionState(permissionState: Boolean)
+
+    fun getNotificationPermissionState(): Boolean
 }

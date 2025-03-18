@@ -759,4 +759,10 @@ internal class VolvoxHubService {
             }
         }
     }
+
+    fun getNotificationPermissionState():Boolean = preferencesRepository.getNotificationPermissionState()
+
+    fun saveNotificationPermissionState(permissionState: Boolean) {
+        preferencesRepository.saveNotificationPermissionState(permissionState)
+    }
 }
