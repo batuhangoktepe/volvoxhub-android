@@ -314,7 +314,6 @@ internal class VolvoxHubService {
         saveVID(response.vid)
         saveSupportedLanguages(response.config.supportedLanguages)
         saveSupportEmail(response.config.supportEmail.orEmpty())
-        response.remoteConfig?.let { preferencesRepository.saveRemoteConfig(it) }
         initializeFirebase()
         initializeFacebook(
             response.thirdParty.facebookAppId.orEmpty(),

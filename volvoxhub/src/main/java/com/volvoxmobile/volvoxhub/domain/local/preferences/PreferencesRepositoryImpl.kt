@@ -115,20 +115,6 @@ class PreferencesRepositoryImpl(
 
     override fun getSupportEmail(): String? = sharedPreferences.getStringOrNull(SUPPORT_EMAIL)
 
-    override fun saveRemoteConfig(remoteConfig: JsonObject) {
-        with(sharedPreferencesEditor) {
-            putString(REMOTE_CONFIG, gson.toJson(remoteConfig))
-            commit()
-        }
-    }
-
-    override fun getRemoteConfig(): JsonObject? {
-        val remoteConfigJson = sharedPreferences.getStringOrNull(REMOTE_CONFIG)
-        return remoteConfigJson?.let {
-            gson.fromJson(it, JsonObject::class.java)
-        }
-    }
-
     companion object {
         private const val ADVERTISING_ID = "advertising_id"
         private const val PUSH_TOKEN = "push_token"
@@ -141,6 +127,5 @@ class PreferencesRepositoryImpl(
         private const val V_ID = "v_id"
         private const val SUPPORT_EMAIL = "support_email"
         private const val SUPPORTED_LANGUAGES = "supported_languages"
-        private const val REMOTE_CONFIG = "remote_config"
     }
 }

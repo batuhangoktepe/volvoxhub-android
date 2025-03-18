@@ -46,8 +46,4 @@ interface PreferencesRepository {
     fun saveSupportedLanguages(languages: List<String>?)
 
     fun getSupportedLanguages(): List<String>?
-
-    fun saveRemoteConfig(remoteConfig: JsonObject)
-
-    fun getRemoteConfig(): JsonObject?
 }
