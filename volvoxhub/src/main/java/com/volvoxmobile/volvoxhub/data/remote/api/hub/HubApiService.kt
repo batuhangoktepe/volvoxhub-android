@@ -8,12 +8,14 @@ import com.google.gson.JsonObject
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.QrLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewMessageResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.QrLoginResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
 import okhttp3.ResponseBody
@@ -68,4 +70,9 @@ interface HubApiService {
 
     @GET("product/app")
     suspend fun getProducts(): GetProductsResponse
+
+    @POST("device/qr-login/approve")
+    suspend fun approveQrLogin(
+        @Body qrLoginRequest: QrLoginRequest
+    ): QrLoginResponse
 }

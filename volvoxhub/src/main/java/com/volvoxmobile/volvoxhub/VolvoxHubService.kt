@@ -42,6 +42,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.InstalledAppsReq
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.QrLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
@@ -49,6 +50,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicket
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.QrLoginResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
@@ -796,5 +798,18 @@ internal class VolvoxHubService {
 
     fun saveNotificationPermissionState(permissionState: Boolean) {
         preferencesRepository.saveNotificationPermissionState(permissionState)
+    }
+
+    fun approveQrLogin(
+        token: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (QrLoginResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.approveQrLogin(QrLoginRequest(token))){
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
     }
 }
