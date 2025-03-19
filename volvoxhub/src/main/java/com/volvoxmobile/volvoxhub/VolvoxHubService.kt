@@ -51,6 +51,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigR
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 import com.volvoxmobile.volvoxhub.db.AppDatabase
 import com.volvoxmobile.volvoxhub.domain.local.localization.LocalizationRepositoryImpl
 import com.volvoxmobile.volvoxhub.domain.local.preferences.PreferencesRepositoryImpl
@@ -715,6 +716,18 @@ internal class VolvoxHubService {
         scope.launch {
             val newTicketRequest = NewTicketRequest(category, message)
             when (val result = hubApiRepository.createNewTicket(newTicketRequest)) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun getUnseenStatus(
+        errorCallback: (String?) -> Unit,
+        successCallback: (UnseenStatusResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.getUnseenStatus()) {
                 is Ok -> successCallback(result.value)
                 is Err -> errorCallback(result.error.message)
             }

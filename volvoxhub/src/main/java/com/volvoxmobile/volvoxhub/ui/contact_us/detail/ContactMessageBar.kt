@@ -61,7 +61,6 @@ fun ContactMessageBar(
     hubResources: HubResources
 ) {
     var textFieldValue by rememberSaveable { mutableStateOf("") }
-    var isAddButtonClicked by rememberSaveable { mutableStateOf(false) }
     var textHeight by remember { mutableIntStateOf(0) }
     var singleLineHeight by remember { mutableIntStateOf(0) }
     var isOverflowing by remember { mutableStateOf(false) }
@@ -159,7 +158,7 @@ fun ContactMessageBar(
                                 onSendMessage(
                                     ContactMessageItem(
                                         Author.USER,
-                                        textFieldValue.trimEnd(),
+                                        textFieldValue.trim(),
                                     )
                                 )
                                 textFieldValue = ""

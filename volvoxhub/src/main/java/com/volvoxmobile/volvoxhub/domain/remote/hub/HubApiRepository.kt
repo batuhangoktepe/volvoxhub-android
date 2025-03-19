@@ -15,6 +15,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicket
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -30,10 +31,10 @@ interface HubApiRepository {
     suspend fun getTicket(
         ticketId: String
     ): GenericResult<SupportTicketResponse>
-
     suspend fun createNewTicket(newTicketRequest: NewTicketRequest): GenericResult<CreateNewTicketResponse>
     suspend fun createNewMessage(
         ticketId: String,
         messageTicketRequest: MessageTicketRequest
     ): GenericResult<CreateNewMessageResponse>
+    suspend fun getUnseenStatus(): GenericResult<UnseenStatusResponse>
 }

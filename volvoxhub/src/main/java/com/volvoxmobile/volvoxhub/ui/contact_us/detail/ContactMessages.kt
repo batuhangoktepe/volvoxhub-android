@@ -39,7 +39,7 @@ fun ContactMessages(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                modifier = Modifier.padding(top = 104.dp),
+                modifier = Modifier.padding(top = 10.dp),
                 painter = painterResource(R.drawable.ic_contact_bot),
                 contentDescription = "Bot"
             )
@@ -47,7 +47,8 @@ fun ContactMessages(
                 modifier = Modifier.offset(y = (-24).dp),
                 text = Localizations.get(context,"how_can_ı_help_you"),
                 fontSize = 16.sp,
-                fontFamily = fonts.semiBold
+                fontFamily = fonts.semiBold,
+                color = VolvoxHubTheme.colors.contactDetailHelpTextColor
             )
         }
     } else {

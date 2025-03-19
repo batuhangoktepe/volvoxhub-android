@@ -13,6 +13,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicket
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -53,4 +54,7 @@ interface HubApiService {
         @Path("ticket_id") ticketId: String,
         @Body messageTicketRequest: MessageTicketRequest
     ): CreateNewMessageResponse
+
+    @GET("support/unseen")
+    suspend fun getUnseenStatus(): UnseenStatusResponse
 }

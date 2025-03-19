@@ -23,6 +23,7 @@ import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopupConfig
@@ -85,8 +86,8 @@ class VolvoxHub private constructor(
             contentColor: Color = Color.White,
         ) {
             WebScreen(
-                url = url, 
-                title = title, 
+                url = url,
+                title = title,
                 onClose = onClose,
                 backgroundColor = backgroundColor,
                 contentColor = contentColor
@@ -237,11 +238,15 @@ class VolvoxHub private constructor(
      * Calls `successCallback` on success with `PromoCodeResponse`,
      * otherwise calls `errorCallback`.
      */
-    fun usePromoCode(code: String, errorCallback: (String?) -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+    fun usePromoCode(
+        code: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (PromoCodeResponse) -> Unit
+    ) {
         volvoxHubService.usePromoCode(code, errorCallback, successCallback)
     }
 
-        /**
+    /**
      * Launches the default email client to send an email.
      *
      * This function uses an implicit intent with the `mailto:` URI scheme to open the default email app installed
@@ -292,11 +297,22 @@ class VolvoxHub private constructor(
      * Revenuecat Trial Check
      */
     fun checkIfUserUsedTrialForPackage(product: StoreProduct): Boolean {
-        val trialCheck = product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
-            offer.pricingPhases.pricingPhaseList.any() { phase ->
-                phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
-            }
-        } ?: false
+        val trialCheck =
+            product.googleProduct?.productDetails?.subscriptionOfferDetails?.any { offer ->
+                offer.pricingPhases.pricingPhaseList.any() { phase ->
+                    phase.priceAmountMicros == 0L && phase.billingCycleCount > 0
+                }
+            } ?: false
         return trialCheck.not()
+    }
+
+    fun getUnseenStatus(
+        errorCallback: (String?) -> Unit,
+        successCallback: (UnseenStatusResponse) -> Unit
+    ) {
+        volvoxHubService.getUnseenStatus(
+            errorCallback = errorCallback,
+            successCallback = successCallback
+        )
     }
 }

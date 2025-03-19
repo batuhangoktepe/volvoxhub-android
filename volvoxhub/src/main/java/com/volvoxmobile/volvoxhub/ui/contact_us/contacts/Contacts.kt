@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -103,9 +104,7 @@ fun Contacts(
             isSpacerVisible = true
         )
         when (tickets) {
-            is ScreenUiState.Error -> {
-            }
-
+            is ScreenUiState.Error -> {}
             ScreenUiState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -175,17 +174,27 @@ fun Contacts(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items((tickets as ScreenUiState.Success).data) {
+                        val result = (tickets as ScreenUiState.Success).data
+                        itemsIndexed(result) { index, ticket ->
                             ContactItem(
-                                contactTitle = it.category ?: "",
-                                contactDescription = it.lastMessage ?: "",
-                                contactDate = formatTimestampToAmPm(it.lastMessageCreatedAt ?: ""),
-                                isSeen = it.isSeen ?: false,
+                                contactTitle = ticket.category ?: "",
+                                contactDescription = ticket.lastMessage ?: "",
+                                contactDate = formatTimestampToAmPm(ticket.lastMessageCreatedAt ?: ""),
+                                isSeen = ticket.isSeen ?: false,
                                 titleFamily = fonts.contactTitle,
                                 descriptionFamily = fonts.contactDescription,
                                 dateFamily = fonts.contactDate
                             ) {
-                                navigateToDetail(it.id ?: "", it.category ?: "")
+                                navigateToDetail(ticket.id ?: "", ticket.category ?: "")
+                            }
+                            if (index < result.size - 1) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                        .background(VolvoxHubTheme.colors.topBarSpacer)
+                                        .padding(horizontal = 24.dp)
+                                )
                             }
                         }
                     }

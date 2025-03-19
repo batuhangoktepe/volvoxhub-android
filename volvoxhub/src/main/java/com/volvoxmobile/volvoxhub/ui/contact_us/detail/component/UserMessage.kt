@@ -42,7 +42,7 @@ fun UserMessage(
                 )
             )
             .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 2.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(modifier = Modifier.weight(1f, fill = false)) {
             Text(

@@ -27,7 +27,8 @@ fun NavGraphBuilder.contactDetailScreen(
     darkColors: VolvoxHubColors,
     lightColors: VolvoxHubColors,
     hubResources: HubResources,
-    isTitleCentered: Boolean
+    isTitleCentered: Boolean,
+    darkTheme: Boolean
 ) {
     composable<ContactDetailRoute>(
         enterTransition = {
@@ -57,6 +58,7 @@ fun NavGraphBuilder.contactDetailScreen(
     ) {
         val arguments = it.toRoute<ContactDetailRoute>()
         VolvoxHubTheme(
+            darkTheme = darkTheme,
             darkColors = darkColors,
             lightColors = lightColors
         ) {

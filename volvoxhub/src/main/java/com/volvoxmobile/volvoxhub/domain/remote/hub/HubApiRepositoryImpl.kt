@@ -17,6 +17,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicket
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 
 class HubApiRepositoryImpl(
     private val hubApiService: HubApiService,
@@ -51,4 +52,6 @@ class HubApiRepositoryImpl(
     ): GenericResult<CreateNewMessageResponse> =
         handleHubRequest { hubApiService.createNewMessage(ticketId, messageTicketRequest) }
 
+    override suspend fun getUnseenStatus(): GenericResult<UnseenStatusResponse> =
+        handleHubRequest { hubApiService.getUnseenStatus() }
 }
