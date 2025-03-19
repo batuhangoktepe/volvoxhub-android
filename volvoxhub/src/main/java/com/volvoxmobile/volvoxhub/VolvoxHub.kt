@@ -175,13 +175,15 @@ class VolvoxHub private constructor(
         @Composable
         fun ShowLogInWithGoogle(
             modifier: Modifier,
+            context: Context,
             successCallback: () -> Unit,
-            errorCallback: (String?) -> Unit
+            errorCallback: (String?) -> Unit,
+            firebaseWebClientId: String
         ) {
-            val context = LocalContext.current
             GoogleSignIn.initialize(
                 config = GoogleSignInConfig(
-                    context = context
+                    context = context,
+                    serverClientId = firebaseWebClientId
                 )
             )
             GoogleSignIn.getInstance().setCallback(
@@ -487,7 +489,6 @@ class VolvoxHub private constructor(
             socialLoginRequest = socialLoginRequest,
             errorCallback = errorCallback,
             successCallback = successCallback
-
         )
     }
 }
