@@ -51,6 +51,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResp
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterSocialResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
@@ -322,7 +323,10 @@ internal class VolvoxHubService {
         )
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
         handleLocalizations(response.config.localizationUrl)
-        initOneSignalSDK(response.thirdParty.oneSignalAppId.orEmpty())
+        initOneSignalSDK(
+            response.thirdParty.oneSignalAppId.orEmpty(),
+            response.social.email.orEmpty()
+        )
         initAmplitudeSdk(
             apiKey = response.thirdParty.amplitudeApiKey.orEmpty(),
             experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty()
@@ -394,10 +398,14 @@ internal class VolvoxHubService {
     /**
      * Initialize the OneSignal SDK
      */
-    private fun initOneSignalSDK(oneSignalAppId: String) {
+    private fun initOneSignalSDK(
+        oneSignalAppId: String,
+        userMail: String
+    ) {
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.NONE, OneSignal.LOG_LEVEL.NONE)
         OneSignal.initWithContext(configuration.context)
         OneSignal.setAppId(oneSignalAppId)
+        OneSignal.setEmail(userMail)
         val pushToken = OneSignal.getDeviceState()?.pushToken ?: ""
         val playerId = OneSignal.getDeviceState()?.userId ?: ""
         checkRequestChanges()
