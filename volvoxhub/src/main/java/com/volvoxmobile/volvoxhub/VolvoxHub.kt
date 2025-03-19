@@ -372,6 +372,7 @@ class VolvoxHub private constructor(
             errorCallback = errorCallback
         )
     }
+
     /**
      * Checks the notification permission status.
      *
@@ -397,14 +398,16 @@ class VolvoxHub private constructor(
             )
 
             val hasRequestedBefore = volvoxHubService.getNotificationPermissionState()
-            
+
             return when {
                 permissionState == PackageManager.PERMISSION_GRANTED -> {
                     NotificationPermissionStatus.GRANTED
                 }
+
                 hasRequestedBefore -> {
                     NotificationPermissionStatus.DENIED
                 }
+
                 else -> {
                     NotificationPermissionStatus.NEVER_REQUESTED
                 }
@@ -442,13 +445,15 @@ class VolvoxHub private constructor(
                     callback(true)
                     notificationPermissionCallbacks.remove(requestCode)
                 }
+
                 NotificationPermissionStatus.NOT_REQUIRED -> {
                     callback(true)
                     notificationPermissionCallbacks.remove(requestCode)
                 }
+
                 else -> {
                     volvoxHubService.saveNotificationPermissionState(true)
-                    
+
                     ActivityCompat.requestPermissions(
                         activity,
                         arrayOf(Manifest.permission.POST_NOTIFICATIONS),
@@ -470,6 +475,19 @@ class VolvoxHub private constructor(
         volvoxHubService.getProducts(
             errorCallback = errorCallback,
             successCallback = successCallback
+        )
+    }
+
+    fun socialLoginRemote(
+        socialLoginRequest: SocialLoginRequest,
+        errorCallback: (String?) -> Unit,
+        successCallback: () -> Unit
+    ) {
+        volvoxHubService.socialLogin(
+            socialLoginRequest = socialLoginRequest,
+            errorCallback = errorCallback,
+            successCallback = successCallback
+
         )
     }
 }
