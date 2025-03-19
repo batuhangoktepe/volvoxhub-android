@@ -54,7 +54,7 @@ class HubApiRepositoryImpl(
     ): GenericResult<CreateNewMessageResponse> =
         handleHubRequest { hubApiService.createNewMessage(ticketId, messageTicketRequest) }
 
-    override suspend fun socialLogin(socialLoginRequest: SocialLoginRequest): GenericResult<Boolean> =
+    override suspend fun socialLogin(socialLoginRequest: SocialLoginRequest): GenericResult<RegisterBaseResponse> =
         handleHubRequest { hubApiService.socialLogin(socialLoginRequest) }
 
     override suspend fun deleteAccount(): GenericResult<DeleteAccountResponse> =

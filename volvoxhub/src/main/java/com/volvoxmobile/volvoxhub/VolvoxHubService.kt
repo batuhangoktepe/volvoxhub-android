@@ -757,11 +757,11 @@ internal class VolvoxHubService {
     fun socialLogin(
         socialLoginRequest: SocialLoginRequest,
         errorCallback: (String?) -> Unit,
-        successCallback: () -> Unit
+        successCallback: (RegisterBaseResponse) -> Unit
     ) {
         scope.launch {
             when (val result = hubApiRepository.socialLogin(socialLoginRequest)) {
-                is Ok -> successCallback()
+                is Ok -> successCallback(result.value)
                 is Err -> errorCallback(result.error.message)
             }
         }

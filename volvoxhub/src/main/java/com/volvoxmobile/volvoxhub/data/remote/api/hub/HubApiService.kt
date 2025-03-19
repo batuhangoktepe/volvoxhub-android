@@ -61,7 +61,7 @@ interface HubApiService {
     @POST("device/social-login")
     suspend fun socialLogin(
         @Body socialLoginRequest: SocialLoginRequest
-    ): Boolean
+    ): RegisterBaseResponse
 
     @DELETE("device")
     suspend fun deleteAccount() : DeleteAccountResponse

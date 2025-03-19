@@ -36,7 +36,7 @@ interface HubApiRepository {
     ): GenericResult<CreateNewMessageResponse>
     suspend fun socialLogin(
         socialLoginRequest: SocialLoginRequest
-    ):GenericResult<Boolean>
+    ):GenericResult<RegisterBaseResponse>
     suspend fun deleteAccount():GenericResult<DeleteAccountResponse>
     suspend fun getProducts():GenericResult<GetProductsResponse>
 }

@@ -36,6 +36,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResp
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
@@ -176,7 +177,7 @@ class VolvoxHub private constructor(
         fun ShowLogInWithGoogle(
             modifier: Modifier,
             context: Context,
-            successCallback: () -> Unit,
+            successCallback: (RegisterBaseResponse) -> Unit,
             errorCallback: (String?) -> Unit,
             firebaseWebClientId: String
         ) {
@@ -483,7 +484,7 @@ class VolvoxHub private constructor(
     fun socialLoginRemote(
         socialLoginRequest: SocialLoginRequest,
         errorCallback: (String?) -> Unit,
-        successCallback: () -> Unit
+        successCallback: (RegisterBaseResponse) -> Unit
     ) {
         volvoxHubService.socialLogin(
             socialLoginRequest = socialLoginRequest,

@@ -9,5 +9,11 @@ data class SocialLoginRequest(
     @SerializedName("provider")
     val provider: String,
     @SerializedName("token")
-    val token: String
+    val token: String,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("email")
+    val email: String,
+    @SerializedName("photo_url")
+    val photoUrl: String
 )
