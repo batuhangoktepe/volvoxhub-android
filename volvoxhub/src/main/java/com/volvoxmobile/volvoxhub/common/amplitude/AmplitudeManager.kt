@@ -26,7 +26,9 @@ object AmplitudeManager {
         context: Context,
         apiKey: String,
         appName: String,
-        experimentKey: String = StringUtils.EMPTY
+        experimentKey: String = StringUtils.EMPTY,
+        userEmail: String,
+        userName: String
     ) {
         amplitude = Amplitude(
             Configuration(
@@ -36,9 +38,10 @@ object AmplitudeManager {
         )
         val identify = Identify()
         identify.set("user-platform", "android")
+        identify.set("user-email", userEmail)
+        identify.set("user-name", userName)
         amplitude.identify(identify)
         amplitude.setUserId(DeviceUuidFactory.create(context = context, appName = appName))
-
         if (experimentKey.isEmpty()) return
         experimentClient = Experiment.initializeWithAmplitudeAnalytics(
             context.applicationContext as Application,

@@ -34,11 +34,13 @@ internal class RcBillingHelper : UpdatedCustomerInfoListener {
         context: Context,
         uuid: String,
         rcKey: String,
+        userEmail: String,
+        userName: String
     ) {
         configurePurchases(context, uuid, rcKey)
         setLoggingLevelIfNeeded()
         anonymousAppDeviceGUID = AppEventsLogger.getAnonymousAppDeviceGUID(context)
-        setUserDeviceId(uuid)
+        setUserDeviceId(uuid, userEmail, userName)
         updateAppsflyerUid(AppsFlyerLib.getInstance().getAppsFlyerUID(context).orEmpty())
         fetchAvailableProducts()
     }
@@ -64,10 +66,12 @@ internal class RcBillingHelper : UpdatedCustomerInfoListener {
         }
     }
 
-    private fun setUserDeviceId(uuid: String) {
+    private fun setUserDeviceId(uuid: String, userEmail: String, userName: String) {
         Purchases.sharedInstance.logIn(uuid)
         Purchases.sharedInstance.setOnesignalID(OneSignal.getDeviceState()?.userId)
         Purchases.sharedInstance.setFBAnonymousID(anonymousAppDeviceGUID)
+        Purchases.sharedInstance.setEmail(userEmail)
+        Purchases.sharedInstance.setDisplayName(userName)
     }
 
     private fun updateAppsflyerUid(uid: String) {
@@ -129,7 +133,8 @@ internal class RcBillingHelper : UpdatedCustomerInfoListener {
 
     fun getSubscriptionSkuDetails(skuDetailsCallback: (List<StoreProduct>) -> Unit) {
         if (isProductsFetched()) {
-            skuDetails?.filter { it.type == ProductType.SUBS }.let { skuDetailsCallback.invoke(it.orEmpty()) }
+            skuDetails?.filter { it.type == ProductType.SUBS }
+                .let { skuDetailsCallback.invoke(it.orEmpty()) }
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
                 fetchAvailableProducts()
@@ -140,7 +145,8 @@ internal class RcBillingHelper : UpdatedCustomerInfoListener {
 
     fun getConsumableSkuDetails(skuDetailsCallback: (List<StoreProduct>) -> Unit) {
         if (isProductsFetched()) {
-            skuDetails?.filter { it.type == ProductType.INAPP }.let { skuDetailsCallback.invoke(it.orEmpty()) }
+            skuDetails?.filter { it.type == ProductType.INAPP }
+                .let { skuDetailsCallback.invoke(it.orEmpty()) }
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
                 fetchAvailableProducts()

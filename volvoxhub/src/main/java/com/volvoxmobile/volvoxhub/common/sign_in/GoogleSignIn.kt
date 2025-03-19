@@ -106,7 +106,10 @@ class GoogleSignIn private constructor(private val config: GoogleSignInConfig) {
                             val socialLoginRequest = SocialLoginRequest(
                                 accountId = payload?.getPayload()?.getSubject() ?: "",
                                 provider = "google",
-                                token = googleIdTokenCredential.idToken
+                                token = googleIdTokenCredential.idToken,
+                                name = googleIdTokenCredential.displayName.orEmpty(),
+                                email = googleIdTokenCredential.id,
+                                photoUrl = googleIdTokenCredential.profilePictureUri?.toString() ?: ""
                             )
                             onSignInSuccess(socialLoginRequest)
                         }

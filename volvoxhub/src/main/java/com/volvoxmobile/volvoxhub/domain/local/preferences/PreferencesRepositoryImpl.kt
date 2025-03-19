@@ -13,8 +13,6 @@ class PreferencesRepositoryImpl(
         sharedPreferences.edit()
     }
 
-    private val gson by lazy { Gson() }
-
     override fun savePushToken(token: String) {
         with(sharedPreferencesEditor) {
             putString(PUSH_TOKEN, token)
@@ -49,7 +47,8 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun getAppsFlyerUserId(): String = sharedPreferences.getStringOrEmpty(APPS_FLYER_USER_ID)
+    override fun getAppsFlyerUserId(): String =
+        sharedPreferences.getStringOrEmpty(APPS_FLYER_USER_ID)
 
     override fun getFirebaseId(): String = sharedPreferences.getStringOrEmpty(FIREBASE_ID)
 
@@ -60,7 +59,8 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun initializeSucceeded(): Boolean = sharedPreferences.getBoolean(INITIALIZE_SUCCEEDED, false)
+    override fun initializeSucceeded(): Boolean =
+        sharedPreferences.getBoolean(INITIALIZE_SUCCEEDED, false)
 
     override fun setInitializeSucceeded(succeeded: Boolean) {
         with(sharedPreferencesEditor) {
@@ -76,7 +76,8 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun getPrivacyPolicyUrl(): String = sharedPreferences.getStringOrEmpty(PRIVACY_POLICY_URL)
+    override fun getPrivacyPolicyUrl(): String =
+        sharedPreferences.getStringOrEmpty(PRIVACY_POLICY_URL)
 
     override fun setTermsOfServiceUrl(url: String?) {
         with(sharedPreferencesEditor) {
@@ -85,7 +86,8 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun getTermsOfServiceUrl(): String = sharedPreferences.getStringOrEmpty(TERMS_OF_SERVICE_URL)
+    override fun getTermsOfServiceUrl(): String =
+        sharedPreferences.getStringOrEmpty(TERMS_OF_SERVICE_URL)
 
     override fun saveVID(vId: String) {
         with(sharedPreferencesEditor) {
@@ -106,6 +108,7 @@ class PreferencesRepositoryImpl(
     override fun getSupportedLanguages(): List<String> =
         sharedPreferences.getStringSet(SUPPORTED_LANGUAGES, emptySet())?.toList() ?: emptyList()
 
+
     override fun saveSupportedLanguages(languages: List<String>?) {
         with(sharedPreferencesEditor) {
             putStringSet(SUPPORTED_LANGUAGES, languages?.toSet() ?: emptySet())
@@ -114,6 +117,17 @@ class PreferencesRepositoryImpl(
     }
 
     override fun getSupportEmail(): String? = sharedPreferences.getStringOrNull(SUPPORT_EMAIL)
+
+    override fun saveNotificationPermissionState(permissionState: Boolean) {
+        with(sharedPreferencesEditor) {
+            putBoolean(NOTIFICATION_REQUESTED, permissionState)
+            apply()
+        }
+    }
+
+    override fun getNotificationPermissionState(): Boolean =
+        sharedPreferences.getBoolean(NOTIFICATION_REQUESTED, false)
+
 
     companion object {
         private const val ADVERTISING_ID = "advertising_id"
@@ -127,5 +141,6 @@ class PreferencesRepositoryImpl(
         private const val V_ID = "v_id"
         private const val SUPPORT_EMAIL = "support_email"
         private const val SUPPORTED_LANGUAGES = "supported_languages"
+        private const val NOTIFICATION_REQUESTED = "notification_permission_requested"
     }
 }

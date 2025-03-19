@@ -324,12 +324,23 @@ internal class VolvoxHubService {
         )
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
         handleLocalizations(response.config.localizationUrl)
-        initOneSignalSDK(response.thirdParty.oneSignalAppId.orEmpty())
+        initOneSignalSDK(
+            response.thirdParty.oneSignalAppId.orEmpty(),
+            response.social.email.orEmpty(),
+            response.social.name.orEmpty()
+        )
         initAmplitudeSdk(
             apiKey = response.thirdParty.amplitudeApiKey.orEmpty(),
-            experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty()
+            experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty(),
+            response.social.email.orEmpty(),
+            response.social.name.orEmpty()
         )
-        initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty(), response.vid)
+        initializeRcBillingHelper(
+            response.thirdParty.revenuecatId.orEmpty(),
+            response.vid,
+            response.social.email.orEmpty(),
+            response.social.name.orEmpty()
+        )
         saveConfigUrls(response.config)
         hubInitListener.onInitCompleted(volvoxHubResponse)
     }
@@ -384,22 +395,35 @@ internal class VolvoxHubService {
     /**
      * Initialize the RevenueCat billing helper
      */
-    private fun initializeRcBillingHelper(rcKey: String, vId: String) {
+    private fun initializeRcBillingHelper(
+        rcKey: String,
+        vId: String,
+        userEmail: String,
+        userName: String
+    ) {
         if (rcKey.isEmpty()) return
         VolvoxHub.getInstance().rcBillingHelper.init(
             context = configuration.context,
             rcKey = rcKey,
             uuid = vId,
+            userEmail = userEmail,
+            userName = userName
         )
     }
 
     /**
      * Initialize the OneSignal SDK
      */
-    private fun initOneSignalSDK(oneSignalAppId: String) {
+    private fun initOneSignalSDK(
+        oneSignalAppId: String,
+        userEmail: String,
+        userName: String
+    ) {
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.NONE, OneSignal.LOG_LEVEL.NONE)
         OneSignal.initWithContext(configuration.context)
         OneSignal.setAppId(oneSignalAppId)
+        OneSignal.setEmail(userEmail)
+        OneSignal.sendTag("user_name", userName)
         val pushToken = OneSignal.getDeviceState()?.pushToken ?: ""
         val playerId = OneSignal.getDeviceState()?.userId ?: ""
         checkRequestChanges()
@@ -529,13 +553,20 @@ internal class VolvoxHubService {
     /**
      * Initialize the Amplitude SDK
      */
-    private fun initAmplitudeSdk(apiKey: String, experimentKey: String = StringUtils.EMPTY) {
+    private fun initAmplitudeSdk(
+        apiKey: String,
+        experimentKey: String = StringUtils.EMPTY,
+        userEmail: String,
+        userName: String
+    ) {
         tryOrLog {
             AmplitudeManager.initialize(
                 configuration.context,
                 apiKey = apiKey,
                 experimentKey = experimentKey,
-                appName = configuration.appName
+                appName = configuration.appName,
+                userEmail = userEmail,
+                userName = userName
             )
         }
     }
@@ -728,11 +759,11 @@ internal class VolvoxHubService {
     fun socialLogin(
         socialLoginRequest: SocialLoginRequest,
         errorCallback: (String?) -> Unit,
-        successCallback: () -> Unit
+        successCallback: (RegisterBaseResponse) -> Unit
     ) {
         scope.launch {
             when (val result = hubApiRepository.socialLogin(socialLoginRequest)) {
-                is Ok -> successCallback()
+                is Ok -> successCallback(result.value)
                 is Err -> errorCallback(result.error.message)
             }
         }
@@ -760,6 +791,13 @@ internal class VolvoxHubService {
                 is Err -> errorCallback(result.error.message)
             }
         }
+    }
+
+    fun getNotificationPermissionState(): Boolean =
+        preferencesRepository.getNotificationPermissionState()
+
+    fun saveNotificationPermissionState(permissionState: Boolean) {
+        preferencesRepository.saveNotificationPermissionState(permissionState)
     }
 
     fun approveQrLogin(
