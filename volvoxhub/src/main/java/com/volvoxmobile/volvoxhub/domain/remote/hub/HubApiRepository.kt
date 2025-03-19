@@ -5,6 +5,7 @@ import com.volvoxmobile.volvoxhub.common.util.GenericResult
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.QrLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
@@ -13,6 +14,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicket
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.QrLoginResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
@@ -39,4 +41,5 @@ interface HubApiRepository {
     ):GenericResult<Boolean>
     suspend fun deleteAccount():GenericResult<DeleteAccountResponse>
     suspend fun getProducts():GenericResult<GetProductsResponse>
+    suspend fun approveQrLogin(qrLoginRequest: QrLoginRequest):GenericResult<QrLoginResponse>
 }

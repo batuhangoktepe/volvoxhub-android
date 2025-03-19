@@ -36,6 +36,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResp
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.QrLoginResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
@@ -470,5 +471,15 @@ class VolvoxHub private constructor(
             errorCallback = errorCallback,
             successCallback = successCallback
         )
+    }
+
+    fun approveQrLogin(
+        token: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (QrLoginResponse) -> Unit
+    ) {
+       volvoxHubService.approveQrLogin(
+           token, errorCallback, successCallback
+       )
     }
 }
