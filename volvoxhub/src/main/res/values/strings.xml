@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Volvox Hub</string>
+    <string name="log_in_with_google">Log in with Google</string>
     <string name="contact_us">Contact us</string>
     <string name="write_your_message_here">Write your message here</string>
     <string name="technical_issues">Technical Issues</string>
