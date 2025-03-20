@@ -811,10 +811,12 @@ internal class VolvoxHubService {
         successCallback: (QrLoginResponse) -> Unit
     ) {
         scope.launch {
-            when (val result = hubApiRepository.approveQrLogin(QrLoginRequest(token))){
+            when (val result = hubApiRepository.approveQrLogin(QrLoginRequest(token))) {
                 is Ok -> successCallback(result.value)
                 is Err -> errorCallback(result.error.message)
             }
         }
     }
+
+    fun getGoogleClientId(): String = preferencesRepository.getGoogleClientId()
 }
