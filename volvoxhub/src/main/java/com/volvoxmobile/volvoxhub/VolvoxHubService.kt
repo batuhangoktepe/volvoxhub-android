@@ -343,6 +343,7 @@ internal class VolvoxHubService {
             response.social.name.orEmpty()
         )
         saveConfigUrls(response.config)
+        saveGoogleClientId(response.thirdParty.googleClientId.orEmpty())
         hubInitListener.onInitCompleted(volvoxHubResponse)
     }
 
@@ -531,6 +532,10 @@ internal class VolvoxHubService {
     private fun saveConfigUrls(config: RegisterConfigResponse) {
         preferencesRepository.setPrivacyPolicyUrl(config.privacyPolicyUrl)
         preferencesRepository.setTermsOfServiceUrl(config.eula)
+    }
+
+    private fun saveGoogleClientId(googleClientId: String) {
+        preferencesRepository.saveGoogleClientId(googleClientId)
     }
 
     /**
@@ -819,10 +824,12 @@ internal class VolvoxHubService {
         successCallback: (QrLoginResponse) -> Unit
     ) {
         scope.launch {
-            when (val result = hubApiRepository.approveQrLogin(QrLoginRequest(token))){
+            when (val result = hubApiRepository.approveQrLogin(QrLoginRequest(token))) {
                 is Ok -> successCallback(result.value)
                 is Err -> errorCallback(result.error.message)
             }
         }
     }
+
+    fun getGoogleClientId(): String = preferencesRepository.getGoogleClientId()
 }

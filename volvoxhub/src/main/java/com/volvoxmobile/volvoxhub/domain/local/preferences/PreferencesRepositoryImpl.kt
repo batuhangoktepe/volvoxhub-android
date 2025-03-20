@@ -1,8 +1,6 @@
 package com.volvoxmobile.volvoxhub.domain.local.preferences
 
 import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.volvoxmobile.volvoxhub.common.extensions.getStringOrEmpty
 import com.volvoxmobile.volvoxhub.common.extensions.getStringOrNull
 
@@ -47,8 +45,7 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun getAppsFlyerUserId(): String =
-        sharedPreferences.getStringOrEmpty(APPS_FLYER_USER_ID)
+    override fun getAppsFlyerUserId(): String = sharedPreferences.getStringOrEmpty(APPS_FLYER_USER_ID)
 
     override fun getFirebaseId(): String = sharedPreferences.getStringOrEmpty(FIREBASE_ID)
 
@@ -59,8 +56,7 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun initializeSucceeded(): Boolean =
-        sharedPreferences.getBoolean(INITIALIZE_SUCCEEDED, false)
+    override fun initializeSucceeded(): Boolean = sharedPreferences.getBoolean(INITIALIZE_SUCCEEDED, false)
 
     override fun setInitializeSucceeded(succeeded: Boolean) {
         with(sharedPreferencesEditor) {
@@ -76,8 +72,7 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun getPrivacyPolicyUrl(): String =
-        sharedPreferences.getStringOrEmpty(PRIVACY_POLICY_URL)
+    override fun getPrivacyPolicyUrl(): String = sharedPreferences.getStringOrEmpty(PRIVACY_POLICY_URL)
 
     override fun setTermsOfServiceUrl(url: String?) {
         with(sharedPreferencesEditor) {
@@ -86,8 +81,7 @@ class PreferencesRepositoryImpl(
         }
     }
 
-    override fun getTermsOfServiceUrl(): String =
-        sharedPreferences.getStringOrEmpty(TERMS_OF_SERVICE_URL)
+    override fun getTermsOfServiceUrl(): String = sharedPreferences.getStringOrEmpty(TERMS_OF_SERVICE_URL)
 
     override fun saveVID(vId: String) {
         with(sharedPreferencesEditor) {
@@ -107,7 +101,6 @@ class PreferencesRepositoryImpl(
 
     override fun getSupportedLanguages(): List<String> =
         sharedPreferences.getStringSet(SUPPORTED_LANGUAGES, emptySet())?.toList() ?: emptyList()
-
 
     override fun saveSupportedLanguages(languages: List<String>?) {
         with(sharedPreferencesEditor) {
@@ -129,6 +122,15 @@ class PreferencesRepositoryImpl(
         sharedPreferences.getBoolean(NOTIFICATION_REQUESTED, false)
 
 
+    override fun saveGoogleClientId(googleClientId: String) {
+        with(sharedPreferencesEditor){
+            putString(GOOGLE_CLIENT_ID,googleClientId)
+            commit()
+        }
+    }
+
+    override fun getGoogleClientId(): String = sharedPreferences.getStringOrEmpty(GOOGLE_CLIENT_ID)
+
     companion object {
         private const val ADVERTISING_ID = "advertising_id"
         private const val PUSH_TOKEN = "push_token"
@@ -142,5 +144,6 @@ class PreferencesRepositoryImpl(
         private const val SUPPORT_EMAIL = "support_email"
         private const val SUPPORTED_LANGUAGES = "supported_languages"
         private const val NOTIFICATION_REQUESTED = "notification_permission_requested"
+        private const val GOOGLE_CLIENT_ID = "google_client_id"
     }
 }

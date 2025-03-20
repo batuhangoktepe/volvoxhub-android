@@ -50,4 +50,8 @@ interface PreferencesRepository {
     fun saveNotificationPermissionState(permissionState: Boolean)
 
     fun getNotificationPermissionState(): Boolean
+
+    fun saveGoogleClientId(googleClientId: String)
+
+    fun getGoogleClientId(): String
 }

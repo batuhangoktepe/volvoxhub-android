@@ -180,13 +180,12 @@ class VolvoxHub private constructor(
             modifier: Modifier,
             context: Context,
             successCallback: (RegisterBaseResponse) -> Unit,
-            errorCallback: (String?) -> Unit,
-            firebaseWebClientId: String
+            errorCallback: (String?) -> Unit
         ) {
             GoogleSignIn.initialize(
                 config = GoogleSignInConfig(
                     context = context,
-                    serverClientId = firebaseWebClientId
+                    serverClientId = VolvoxHubService.instance.getGoogleClientId()
                 )
             )
             GoogleSignIn.getInstance().setCallback(
