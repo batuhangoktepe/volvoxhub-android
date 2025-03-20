@@ -4,8 +4,12 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
+import android.os.Build
+import android.Manifest
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,16 +29,22 @@ import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignIn
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInCallback
 import com.volvoxmobile.volvoxhub.common.sign_in.GoogleSignInConfig
 import com.volvoxmobile.volvoxhub.common.util.Localizations
+import com.volvoxmobile.volvoxhub.common.util.NotificationPermissionStatus
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.QrLoginResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopupConfig
 import com.volvoxmobile.volvoxhub.ui.login.GoogleSignInButton
 import com.volvoxmobile.volvoxhub.ui.web.WebScreen
+
 
 class VolvoxHub private constructor(
     configuration: Configuration,
@@ -59,6 +69,12 @@ class VolvoxHub private constructor(
     companion object {
         @Volatile
         private var instance: VolvoxHub? = null
+
+        // Map to store notification permission callbacks
+        private val notificationPermissionCallbacks = mutableMapOf<Int, (Boolean) -> Unit>()
+
+        // Default request code for notification permission
+        private const val DEFAULT_NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
 
         /**
          * Initialize the VolvoxHub
@@ -161,13 +177,15 @@ class VolvoxHub private constructor(
         @Composable
         fun ShowLogInWithGoogle(
             modifier: Modifier,
-            successCallback: () -> Unit,
-            errorCallback: (String?) -> Unit
+            context: Context,
+            successCallback: (RegisterBaseResponse) -> Unit,
+            errorCallback: (String?) -> Unit,
+            firebaseWebClientId: String
         ) {
-            val context = LocalContext.current
             GoogleSignIn.initialize(
                 config = GoogleSignInConfig(
-                    context = context
+                    context = context,
+                    serverClientId = firebaseWebClientId
                 )
             )
             GoogleSignIn.getInstance().setCallback(
@@ -179,6 +197,7 @@ class VolvoxHub private constructor(
                             successCallback = successCallback
                         )
                     }
+
                     override fun onSignInError(exception: Exception) {
                         errorCallback(exception.message)
                     }
@@ -348,4 +367,140 @@ class VolvoxHub private constructor(
         return trialCheck.not()
     }
 
+    fun deleteAccount(
+        errorCallback: (String?) -> Unit,
+        successCallback: (DeleteAccountResponse) -> Unit
+    ) {
+        volvoxHubService.deleteAccount(
+            successCallback = successCallback,
+            errorCallback = errorCallback
+        )
+    }
+
+    /**
+     * Checks the notification permission status.
+     *
+     * This function determines the current state of notification permissions based on Android version:
+     * - For Android 13 (API 33) and above, runtime permission for POST_NOTIFICATIONS is required
+     * - For Android 12L (API 32) and below, no explicit permission is required
+     *
+     * @param context The context required to check permissions
+     * @param activity Optional activity parameter needed to check if permission was requested before
+     * @return One of the following [NotificationPermissionStatus] values:
+     *   - NOT_REQUIRED: No permission needed (API 32 and below)
+     *   - GRANTED: Permission already granted
+     *   - NEVER_REQUESTED: Permission never requested
+     *   - DENIED: Permission denied
+     */
+    fun checkNotificationPermissionStatus(
+        context: Context
+    ): NotificationPermissionStatus {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permissionState = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+
+            val hasRequestedBefore = volvoxHubService.getNotificationPermissionState()
+
+            return when {
+                permissionState == PackageManager.PERMISSION_GRANTED -> {
+                    NotificationPermissionStatus.GRANTED
+                }
+
+                hasRequestedBefore -> {
+                    NotificationPermissionStatus.DENIED
+                }
+
+                else -> {
+                    NotificationPermissionStatus.NEVER_REQUESTED
+                }
+            }
+        }
+        return NotificationPermissionStatus.NOT_REQUIRED
+    }
+
+    /**
+     * Requests the POST_NOTIFICATIONS permission for Android 13 (API 33) and above.
+     *
+     * This function handles the notification permission request process:
+     * - For Android 13 (API 33) and above, it requests the POST_NOTIFICATIONS permission
+     * - For Android 12L (API 32) and below, the callback is immediately invoked with true as no permission is needed
+     *
+     * The result of the permission request will be delivered through the provided callback.
+     * Note: The host Activity must override onRequestPermissionsResult and call VolvoxHub.onRequestPermissionsResult
+     * to properly handle the permission result.
+     *
+     * @param activity The activity required to request the permission
+     * @param callback A callback function that will be invoked with the result of the permission request (true if granted, false if denied)
+     * @param requestCode Optional request code for the permission request (default: DEFAULT_NOTIFICATION_PERMISSION_REQUEST_CODE)
+     */
+    fun requestNotificationPermission(
+        activity: Activity,
+        callback: (Boolean) -> Unit,
+        requestCode: Int = DEFAULT_NOTIFICATION_PERMISSION_REQUEST_CODE
+    ) {
+        notificationPermissionCallbacks[requestCode] = callback
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permissionState = checkNotificationPermissionStatus(activity)
+
+            when (permissionState) {
+                NotificationPermissionStatus.GRANTED -> {
+                    callback(true)
+                    notificationPermissionCallbacks.remove(requestCode)
+                }
+
+                NotificationPermissionStatus.NOT_REQUIRED -> {
+                    callback(true)
+                    notificationPermissionCallbacks.remove(requestCode)
+                }
+
+                else -> {
+                    volvoxHubService.saveNotificationPermissionState(true)
+
+                    ActivityCompat.requestPermissions(
+                        activity,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        requestCode
+                    )
+                }
+            }
+        } else {
+            callback(true)
+            notificationPermissionCallbacks.remove(requestCode)
+        }
+    }
+
+
+    fun getProducts(
+        successCallback: (GetProductsResponse) -> Unit,
+        errorCallback: (String?) -> Unit
+    ) {
+        volvoxHubService.getProducts(
+            errorCallback = errorCallback,
+            successCallback = successCallback
+        )
+    }
+
+    fun socialLoginRemote(
+        socialLoginRequest: SocialLoginRequest,
+        errorCallback: (String?) -> Unit,
+        successCallback: (RegisterBaseResponse) -> Unit
+    ) {
+        volvoxHubService.socialLogin(
+            socialLoginRequest = socialLoginRequest,
+            errorCallback = errorCallback,
+            successCallback = successCallback
+        )
+    }
+
+    fun approveQrLogin(
+        token: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (QrLoginResponse) -> Unit
+    ) {
+       volvoxHubService.approveQrLogin(
+           token, errorCallback, successCallback
+       )
+    }
 }

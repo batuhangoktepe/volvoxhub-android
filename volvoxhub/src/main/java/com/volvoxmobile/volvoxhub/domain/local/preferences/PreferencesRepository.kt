@@ -1,5 +1,7 @@
 package com.volvoxmobile.volvoxhub.domain.local.preferences
 
+import com.google.gson.JsonObject
+
 interface PreferencesRepository {
     fun savePushToken(token: String)
 
@@ -44,6 +46,10 @@ interface PreferencesRepository {
     fun saveSupportedLanguages(languages: List<String>?)
 
     fun getSupportedLanguages(): List<String>?
+
+    fun saveNotificationPermissionState(permissionState: Boolean)
+
+    fun getNotificationPermissionState(): Boolean
 
     fun saveGoogleClientId(googleClientId: String)
 
