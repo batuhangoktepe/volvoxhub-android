@@ -44,4 +44,8 @@ interface PreferencesRepository {
     fun saveSupportedLanguages(languages: List<String>?)
 
     fun getSupportedLanguages(): List<String>?
+
+    fun saveGoogleClientId(googleClientId: String)
+
+    fun getGoogleClientId(): String
 }

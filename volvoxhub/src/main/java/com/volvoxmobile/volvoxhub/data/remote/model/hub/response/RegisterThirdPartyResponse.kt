@@ -10,5 +10,6 @@ data class RegisterThirdPartyResponse(
     @SerializedName("amplitude_api_key") val amplitudeApiKey: String?,
     @SerializedName("amplitude_deployment_key") val amplitudeExperimentKey: String?,
     @SerializedName("facebook_app_id") val facebookAppId: String?,
-    @SerializedName("facebook_client_token") val facebookClientToken: String?
+    @SerializedName("facebook_client_token") val facebookClientToken: String?,
+    @SerializedName("google_client_id") val googleClientId: String?
 )

@@ -111,6 +111,15 @@ class PreferencesRepositoryImpl(
 
     override fun getSupportEmail(): String? = sharedPreferences.getStringOrNull(SUPPORT_EMAIL)
 
+    override fun saveGoogleClientId(googleClientId: String) {
+        with(sharedPreferencesEditor){
+            putString(GOOGLE_CLIENT_ID,googleClientId)
+            commit()
+        }
+    }
+
+    override fun getGoogleClientId(): String = sharedPreferences.getStringOrEmpty(GOOGLE_CLIENT_ID)
+
     companion object {
         private const val ADVERTISING_ID = "advertising_id"
         private const val PUSH_TOKEN = "push_token"
@@ -123,5 +132,6 @@ class PreferencesRepositoryImpl(
         private const val V_ID = "v_id"
         private const val SUPPORT_EMAIL = "support_email"
         private const val SUPPORTED_LANGUAGES = "supported_languages"
+        private const val GOOGLE_CLIENT_ID = "google_client_id"
     }
 }

@@ -330,6 +330,7 @@ internal class VolvoxHubService {
         )
         initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty(), response.vid)
         saveConfigUrls(response.config)
+        saveGoogleClientId(response.thirdParty.googleClientId.orEmpty())
         hubInitListener.onInitCompleted(volvoxHubResponse)
     }
 
@@ -505,6 +506,10 @@ internal class VolvoxHubService {
     private fun saveConfigUrls(config: RegisterConfigResponse) {
         preferencesRepository.setPrivacyPolicyUrl(config.privacyPolicyUrl)
         preferencesRepository.setTermsOfServiceUrl(config.eula)
+    }
+
+    private fun saveGoogleClientId(googleClientId: String) {
+        preferencesRepository.saveGoogleClientId(googleClientId)
     }
 
     /**
@@ -730,7 +735,7 @@ internal class VolvoxHubService {
         successCallback: () -> Unit
     ) {
         scope.launch {
-            when(val result = hubApiRepository.socialLogin(socialLoginRequest)){
+            when (val result = hubApiRepository.socialLogin(socialLoginRequest)) {
                 is Ok -> successCallback()
                 is Err -> errorCallback(result.error.message)
             }
