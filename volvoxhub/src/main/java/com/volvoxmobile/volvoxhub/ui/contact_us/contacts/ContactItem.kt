@@ -42,8 +42,7 @@ fun ContactItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .padding(vertical = 12.dp)
+            .padding(vertical = 6.dp,horizontal = 24.dp)
             .wrapContentHeight()
             .background(color = VolvoxHubTheme.colors.background)
             .safeClick {
@@ -51,15 +50,17 @@ fun ContactItem(
             },
         verticalAlignment = Alignment.Top
     ) {
-        Box(
-            modifier = Modifier
-                .padding(end = 8.dp, top = 8.dp)
-                .size(6.dp)
-                .background(
-                    color = if (isSeen) Color.Transparent else Color.Magenta,
-                    shape = CircleShape
-                )
-        )
+        if (isSeen.not()){
+            Box(
+                modifier = Modifier
+                    .padding(end = 8.dp, top = 10.dp)
+                    .size(6.dp)
+                    .background(
+                        color =  Color.Magenta,
+                        shape = CircleShape
+                    )
+            )
+        }
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.Start,

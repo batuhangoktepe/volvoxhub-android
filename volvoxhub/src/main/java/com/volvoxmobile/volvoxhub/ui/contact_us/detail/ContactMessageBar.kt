@@ -1,23 +1,19 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us.detail
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -30,26 +26,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.revenuecat.purchases.ui.revenuecatui.composables.AutoResizedText
-import com.volvoxmobile.volvoxhub.R
 import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.ui.contact_us.HubFonts
 import com.volvoxmobile.volvoxhub.ui.contact_us.HubResources
 import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun ContactMessageBar(
@@ -58,13 +46,14 @@ fun ContactMessageBar(
     messageList: List<ContactMessageItem>,
     isTyping: Boolean,
     fonts: HubFonts,
-    hubResources: HubResources
+    hubResources: HubResources,
+    isDarkTheme:Boolean
 ) {
     var textFieldValue by rememberSaveable { mutableStateOf("") }
     var textHeight by remember { mutableIntStateOf(0) }
     var singleLineHeight by remember { mutableIntStateOf(0) }
     var isOverflowing by remember { mutableStateOf(false) }
-
+    val disabledSendButtonRes = if (isDarkTheme) hubResources.disabledSendButton else hubResources.lightDisabledSendButton
     Column(
         Modifier.background(VolvoxHubTheme.colors.background)
     ) {
@@ -149,7 +138,7 @@ fun ContactMessageBar(
                     maxLines = 3
                 )
                 Image(
-                    painter = painterResource(if (textFieldValue.isNotEmpty()) hubResources.sendButton else hubResources.disabledSendButton),
+                    painter = painterResource(if (textFieldValue.isNotEmpty()) hubResources.sendButton else disabledSendButtonRes),
                     contentDescription = null,
                     Modifier
                         .padding(horizontal = 16.dp)

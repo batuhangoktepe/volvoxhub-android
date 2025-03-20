@@ -68,7 +68,8 @@ fun NavGraphBuilder.contactDetailScreen(
                 hubResources = hubResources,
                 ticketId = arguments.ticketId,
                 category = arguments.category,
-                isTitleCentered = isTitleCentered
+                isTitleCentered = isTitleCentered,
+                isDarkTheme = darkTheme
             )
         }
     }

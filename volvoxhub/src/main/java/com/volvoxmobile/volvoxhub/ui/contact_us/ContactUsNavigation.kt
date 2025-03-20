@@ -37,7 +37,9 @@ data class HubResources(
     @DrawableRes
     val sendButton: Int = R.drawable.ic_send,
     @DrawableRes
-    val disabledSendButton: Int = R.drawable.ic_disable_send
+    val disabledSendButton: Int = R.drawable.ic_disable_send,
+    @DrawableRes
+    val lightDisabledSendButton:Int = R.drawable.ic_light_disable_send
 )
 
 @Serializable
