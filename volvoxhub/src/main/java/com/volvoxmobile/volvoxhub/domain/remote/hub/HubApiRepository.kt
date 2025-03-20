@@ -19,6 +19,11 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseRes
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 import okhttp3.ResponseBody
 
 interface HubApiRepository {
@@ -42,4 +47,5 @@ interface HubApiRepository {
     suspend fun deleteAccount():GenericResult<DeleteAccountResponse>
     suspend fun getProducts():GenericResult<GetProductsResponse>
     suspend fun approveQrLogin(qrLoginRequest: QrLoginRequest):GenericResult<QrLoginResponse>
+    suspend fun getUnseenStatus(): GenericResult<UnseenStatusResponse>
 }

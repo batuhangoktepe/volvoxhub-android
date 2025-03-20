@@ -32,7 +32,8 @@ fun ContactDetail(
     hubResources: HubResources,
     ticketId: String?,
     category: String,
-    isTitleCentered: Boolean
+    isTitleCentered: Boolean,
+    isDarkTheme:Boolean
 ) {
     val uiState by viewModel.contactsDetailUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -63,7 +64,8 @@ fun ContactDetail(
                 messageList = emptyList(),
                 isTyping = false,
                 fonts = fonts,
-                hubResources = hubResources
+                hubResources = hubResources,
+                isDarkTheme = isDarkTheme
             )
         },
         modifier = Modifier.background(VolvoxHubTheme.colors.background)

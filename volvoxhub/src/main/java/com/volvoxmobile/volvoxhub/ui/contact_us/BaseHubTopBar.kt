@@ -38,6 +38,7 @@ fun BaseHubTopBar(
     actionsButtons: (@Composable () -> Unit)? = null,
     isSpacerVisible: Boolean = true
 ) {
+    val spacerPadding = if (isSpacerVisible) 8.dp else 16.dp
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -46,7 +47,8 @@ fun BaseHubTopBar(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp, bottom = spacerPadding),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

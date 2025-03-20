@@ -18,7 +18,8 @@ fun NavGraphBuilder.contactsScreen(
     fonts: HubFonts,
     darkColors: VolvoxHubColors,
     lightColors: VolvoxHubColors,
-    isTitleCentered: Boolean
+    isTitleCentered: Boolean,
+    darkTheme:Boolean
 ) {
     composable<ContactsRoute>(
         enterTransition = {
@@ -47,6 +48,7 @@ fun NavGraphBuilder.contactsScreen(
         }
     ) {
         VolvoxHubTheme(
+            darkTheme = darkTheme,
             darkColors = darkColors,
             lightColors = lightColors
         ) {

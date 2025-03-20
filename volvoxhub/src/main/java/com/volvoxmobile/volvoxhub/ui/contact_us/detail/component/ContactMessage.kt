@@ -16,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import android.content.Context
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.volvoxmobile.volvoxhub.ui.contact_us.HubFonts
@@ -29,6 +31,7 @@ fun ContactMessage(
     message: ContactMessageItem,
     fonts: HubFonts
 ) {
+    val context = LocalContext.current
     Row(
         modifier = modifier
             .widthIn(max = 300.dp, min = 100.dp)
@@ -62,7 +65,7 @@ fun ContactMessage(
             color = VolvoxHubTheme.colors.textColor,
         )
         Text(
-            text = formatTimestampToAmPm(message.time ?: ""),
+            text = formatTimestampToAmPm(message.time ?: "", context),
             fontFamily = fonts.messageDateText,
             color = VolvoxHubTheme.colors.contactMessageTime,
             fontSize = 8.sp,

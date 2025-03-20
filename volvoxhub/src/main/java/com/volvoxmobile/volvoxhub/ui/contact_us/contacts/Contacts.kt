@@ -1,5 +1,6 @@
 package com.volvoxmobile.volvoxhub.ui.contact_us.contacts
 
+import android.text.format.DateFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -50,6 +52,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import android.content.Context
 
 @Composable
 fun Contacts(
@@ -103,9 +106,7 @@ fun Contacts(
             isSpacerVisible = true
         )
         when (tickets) {
-            is ScreenUiState.Error -> {
-            }
-
+            is ScreenUiState.Error -> {}
             ScreenUiState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -173,19 +174,29 @@ fun Contacts(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize().padding(top = 24.dp, bottom = 24.dp)
                     ) {
-                        items((tickets as ScreenUiState.Success).data) {
+                        val result = (tickets as ScreenUiState.Success).data
+                        itemsIndexed(result) { index, ticket ->
                             ContactItem(
-                                contactTitle = it.category ?: "",
-                                contactDescription = it.lastMessage ?: "",
-                                contactDate = formatTimestampToAmPm(it.lastMessageCreatedAt ?: ""),
-                                isSeen = it.isSeen ?: false,
+                                contactTitle = ticket.category ?: "",
+                                contactDescription = ticket.lastMessage ?: "",
+                                contactDate = formatTimestampToAmPm(ticket.lastMessageCreatedAt ?: "", context),
+                                isSeen = ticket.isSeen ?: false,
                                 titleFamily = fonts.contactTitle,
                                 descriptionFamily = fonts.contactDescription,
                                 dateFamily = fonts.contactDate
                             ) {
-                                navigateToDetail(it.id ?: "", it.category ?: "")
+                                navigateToDetail(ticket.id ?: "", ticket.category ?: "")
+                            }
+                            if (index < result.size - 1) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .padding(horizontal = 24.dp)
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                        .background(VolvoxHubTheme.colors.topBarSpacer)
+                                )
                             }
                         }
                     }
@@ -231,14 +242,23 @@ fun Contacts(
     }
 }
 
-fun formatTimestampToAmPm(apiTimestamp: String): String {
+fun formatTimestampToAmPm(apiTimestamp: String, context: Context): String {
     try {
         val isoFormat =
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
         val date: Date = isoFormat.parse(apiTimestamp) ?: return ""
-        val localTimeFormat = SimpleDateFormat("h:mm", Locale.getDefault()).apply {
+
+        val is24Hour = DateFormat.is24HourFormat(context)
+        
+        val pattern = if (is24Hour) {
+            "HH:mm"
+        } else {
+            "h:mm a"
+        }
+        
+        val localTimeFormat = SimpleDateFormat(pattern, Locale.getDefault()).apply {
             timeZone = TimeZone.getDefault()
         }
         return localTimeFormat.format(date)

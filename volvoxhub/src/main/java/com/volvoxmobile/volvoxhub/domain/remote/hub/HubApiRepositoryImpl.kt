@@ -21,6 +21,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseRes
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 import okhttp3.ResponseBody
 
 class HubApiRepositoryImpl(
@@ -56,6 +57,8 @@ class HubApiRepositoryImpl(
     ): GenericResult<CreateNewMessageResponse> =
         handleHubRequest { hubApiService.createNewMessage(ticketId, messageTicketRequest) }
 
+    override suspend fun getUnseenStatus(): GenericResult<UnseenStatusResponse> =
+        handleHubRequest { hubApiService.getUnseenStatus() }
     override suspend fun socialLogin(socialLoginRequest: SocialLoginRequest): GenericResult<RegisterBaseResponse> =
         handleHubRequest { hubApiService.socialLogin(socialLoginRequest) }
 
