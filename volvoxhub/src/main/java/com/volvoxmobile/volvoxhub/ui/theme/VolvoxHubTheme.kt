@@ -36,7 +36,8 @@ data class VolvoxHubColors(
     val contactMessageTime: Color = Color.Unspecified,
     val contactMessageBorder: Color = Color.Unspecified,
     val progressIndicatorColor: Color = Color.Unspecified,
-    val topBarSpacer: Color = Color.Unspecified
+    val topBarSpacer: Color = Color.Unspecified,
+    val contactDetailHelpTextColor: Color = Color.Unspecified
 ) {
     companion object {
         fun create(theme: Theme): VolvoxHubColors {
@@ -65,7 +66,8 @@ data class VolvoxHubColors(
                     contactMessageTime = LightCaption,
                     contactMessageBorder = LightBorder,
                     topBarSpacer = LightBorder,
-                    userMessageText = Color.White
+                    userMessageText = Color.White,
+                    contactDetailHelpTextColor = ContactDetailHelpColor
                 )
 
                 Theme.DARK -> VolvoxHubColors(
@@ -92,7 +94,8 @@ data class VolvoxHubColors(
                     contactMessageTime = Gray,
                     contactMessageBorder = Line,
                     topBarSpacer = Line,
-                    userMessageText = Color.White
+                    userMessageText = Color.White,
+                    contactDetailHelpTextColor = ContactDetailHelpColor
                 )
             }
         }

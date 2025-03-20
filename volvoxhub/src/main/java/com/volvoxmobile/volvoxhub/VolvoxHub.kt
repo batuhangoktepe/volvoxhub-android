@@ -39,6 +39,7 @@ import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeRespon
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.QrLoginResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 import com.volvoxmobile.volvoxhub.strings.ConfigureStrings
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopup
 import com.volvoxmobile.volvoxhub.ui.ban.BannedPopupConfig
@@ -364,6 +365,16 @@ class VolvoxHub private constructor(
                 }
             } ?: false
         return trialCheck.not()
+    }
+
+    fun getUnseenStatus(
+        errorCallback: (String?) -> Unit,
+        successCallback: (UnseenStatusResponse) -> Unit
+    ) {
+        volvoxHubService.getUnseenStatus(
+            errorCallback = errorCallback,
+            successCallback = successCallback
+        )
     }
 
     fun deleteAccount(

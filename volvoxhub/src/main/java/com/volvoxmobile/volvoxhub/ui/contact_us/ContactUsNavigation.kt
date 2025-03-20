@@ -37,7 +37,9 @@ data class HubResources(
     @DrawableRes
     val sendButton: Int = R.drawable.ic_send,
     @DrawableRes
-    val disabledSendButton: Int = R.drawable.ic_disable_send
+    val disabledSendButton: Int = R.drawable.ic_disable_send,
+    @DrawableRes
+    val lightDisabledSendButton:Int = R.drawable.ic_light_disable_send
 )
 
 @Serializable
@@ -52,7 +54,8 @@ fun NavGraphBuilder.contactUsNavigation(
     darkColors: VolvoxHubColors = VolvoxHubColors.create(Theme.DARK),
     lightColors: VolvoxHubColors = VolvoxHubColors.create(Theme.LIGHT),
     hubResources: HubResources = HubResources(),
-    isTitleCentered: Boolean = false
+    isTitleCentered: Boolean = false,
+    darkTheme: Boolean = true
 ) {
     navigation<ContactsScreensRoute>(
         startDestination = ContactsRoute
@@ -63,7 +66,8 @@ fun NavGraphBuilder.contactUsNavigation(
             fonts = fonts,
             darkColors = darkColors,
             lightColors = lightColors,
-            isTitleCentered
+            isTitleCentered = isTitleCentered,
+            darkTheme = darkTheme
         )
         contactDetailScreen(
             navigateBack = navController::popBackStack,
@@ -71,7 +75,8 @@ fun NavGraphBuilder.contactUsNavigation(
             darkColors = darkColors,
             lightColors = lightColors,
             hubResources = hubResources,
-            isTitleCentered
+            isTitleCentered = isTitleCentered,
+            darkTheme = darkTheme
         )
     }
 }
