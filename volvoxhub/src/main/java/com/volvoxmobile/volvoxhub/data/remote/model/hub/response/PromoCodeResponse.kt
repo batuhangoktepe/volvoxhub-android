@@ -8,4 +8,5 @@ data class PromoCodeResponse(
     @SerializedName("action_type") val actionType: String,
     @SerializedName("action_meta") val actionMeta: String,
     @SerializedName("extra_data") val extraData: JsonObject,
+    @SerializedName("non_discounted_product_id") val nonDiscountedProductId: String
 )
