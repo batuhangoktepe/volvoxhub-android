@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.room.Room
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
@@ -38,13 +39,24 @@ import com.volvoxmobile.volvoxhub.data.local.model.db.LocalizationEntity
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiHeaderInterceptor
 import com.volvoxmobile.volvoxhub.data.remote.api.hub.HubApiService
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.InstalledAppsRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.MessageTicketRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.NewTicketRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.PromoCodeRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.QrLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.RegisterRequest
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.request.SocialLoginRequest
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.ClaimRewardResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.CreateNewTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.DeleteAccountResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.GetProductsResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.PromoCodeResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.QrLoginResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterBaseResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RegisterConfigResponse
 import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.RewardStatusResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.SupportTicketsResponse
+import com.volvoxmobile.volvoxhub.data.remote.model.hub.response.UnseenStatusResponse
 import com.volvoxmobile.volvoxhub.db.AppDatabase
 import com.volvoxmobile.volvoxhub.domain.local.localization.LocalizationRepositoryImpl
 import com.volvoxmobile.volvoxhub.domain.local.preferences.PreferencesRepositoryImpl
@@ -302,18 +314,36 @@ internal class VolvoxHubService {
                 remoteConfig = response.remoteConfig,
                 vId = response.vid
             )
-
         saveVID(response.vid)
         saveSupportedLanguages(response.config.supportedLanguages)
         saveSupportEmail(response.config.supportEmail.orEmpty())
         initializeFirebase()
-        initializeFacebook(response.thirdParty.facebookAppId.orEmpty(), response.thirdParty.facebookClientToken.orEmpty(), configuration.appName)
+        initializeFacebook(
+            response.thirdParty.facebookAppId.orEmpty(),
+            response.thirdParty.facebookClientToken.orEmpty(),
+            configuration.appName
+        )
         initAppsflyerSdk(response.thirdParty.appsflyerDevKey.orEmpty())
         handleLocalizations(response.config.localizationUrl)
-        initOneSignalSDK(response.thirdParty.oneSignalAppId.orEmpty())
-        initAmplitudeSdk(apiKey = response.thirdParty.amplitudeApiKey.orEmpty(), experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty())
-        initializeRcBillingHelper(response.thirdParty.revenuecatId.orEmpty(), response.vid)
+        initOneSignalSDK(
+            response.thirdParty.oneSignalAppId.orEmpty(),
+            response.social.email.orEmpty(),
+            response.social.name.orEmpty()
+        )
+        initAmplitudeSdk(
+            apiKey = response.thirdParty.amplitudeApiKey.orEmpty(),
+            experimentKey = response.thirdParty.amplitudeExperimentKey.orEmpty(),
+            response.social.email.orEmpty(),
+            response.social.name.orEmpty()
+        )
+        initializeRcBillingHelper(
+            response.thirdParty.revenuecatId.orEmpty(),
+            response.vid,
+            response.social.email.orEmpty(),
+            response.social.name.orEmpty()
+        )
         saveConfigUrls(response.config)
+        saveGoogleClientId(response.thirdParty.googleClientId.orEmpty())
         hubInitListener.onInitCompleted(volvoxHubResponse)
     }
 
@@ -333,11 +363,23 @@ internal class VolvoxHubService {
             }
         }
 
-        logIfEmpty(thirdPartyResponse.oneSignalAppId.orEmpty(), ConfigureStrings.ONE_SIGNAL_APP_ID_EMPTY)
+        logIfEmpty(
+            thirdPartyResponse.oneSignalAppId.orEmpty(),
+            ConfigureStrings.ONE_SIGNAL_APP_ID_EMPTY
+        )
         logIfEmpty(thirdPartyResponse.revenuecatId.orEmpty(), ConfigureStrings.REVENUECAT_ID_EMPTY)
-        logIfEmpty(thirdPartyResponse.appsflyerDevKey.orEmpty(), ConfigureStrings.APPSFLYER_DEV_KEY_EMPTY)
-        logIfEmpty(thirdPartyResponse.amplitudeApiKey.orEmpty(), ConfigureStrings.AMPLITUDE_API_KEY_EMPTY)
-        logIfEmpty(thirdPartyResponse.appsflyerAppId.orEmpty(), ConfigureStrings.APPSFLYER_APP_ID_EMPTY)
+        logIfEmpty(
+            thirdPartyResponse.appsflyerDevKey.orEmpty(),
+            ConfigureStrings.APPSFLYER_DEV_KEY_EMPTY
+        )
+        logIfEmpty(
+            thirdPartyResponse.amplitudeApiKey.orEmpty(),
+            ConfigureStrings.AMPLITUDE_API_KEY_EMPTY
+        )
+        logIfEmpty(
+            thirdPartyResponse.appsflyerAppId.orEmpty(),
+            ConfigureStrings.APPSFLYER_APP_ID_EMPTY
+        )
     }
 
     /**
@@ -355,22 +397,35 @@ internal class VolvoxHubService {
     /**
      * Initialize the RevenueCat billing helper
      */
-    private fun initializeRcBillingHelper(rcKey: String, vId: String) {
+    private fun initializeRcBillingHelper(
+        rcKey: String,
+        vId: String,
+        userEmail: String,
+        userName: String
+    ) {
         if (rcKey.isEmpty()) return
         VolvoxHub.getInstance().rcBillingHelper.init(
             context = configuration.context,
             rcKey = rcKey,
             uuid = vId,
+            userEmail = userEmail,
+            userName = userName
         )
     }
 
     /**
      * Initialize the OneSignal SDK
      */
-    private fun initOneSignalSDK(oneSignalAppId: String) {
+    private fun initOneSignalSDK(
+        oneSignalAppId: String,
+        userEmail: String,
+        userName: String
+    ) {
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.NONE, OneSignal.LOG_LEVEL.NONE)
         OneSignal.initWithContext(configuration.context)
         OneSignal.setAppId(oneSignalAppId)
+        OneSignal.setEmail(userEmail)
+        OneSignal.sendTag("user_name", userName)
         val pushToken = OneSignal.getDeviceState()?.pushToken ?: ""
         val playerId = OneSignal.getDeviceState()?.userId ?: ""
         checkRequestChanges()
@@ -418,13 +473,20 @@ internal class VolvoxHubService {
             }
         }, configuration.context)
         AppsFlyerLib.getInstance().setAppId(configuration.packageName)
-        AppsFlyerLib.getInstance().setCustomerUserId(DeviceUuidFactory.create(configuration.context, configuration.appName))
+        AppsFlyerLib.getInstance().setCustomerUserId(
+            DeviceUuidFactory.create(
+                configuration.context,
+                configuration.appName
+            )
+        )
         AppsFlyerLib.getInstance().waitForCustomerUserId(true)
         AppsFlyerLib.getInstance().start(configuration.context)
         triggerForegroundManually(configuration.context)
 
         checkRequestChanges()
-        preferencesRepository.setAppsFlyerUserId(AppsFlyerLib.getInstance().getAppsFlyerUID(configuration.context).orEmpty())
+        preferencesRepository.setAppsFlyerUserId(
+            AppsFlyerLib.getInstance().getAppsFlyerUID(configuration.context).orEmpty()
+        )
     }
 
     // TODO refactor
@@ -441,7 +503,8 @@ internal class VolvoxHubService {
     private suspend fun handleLocalizations(localizationUrl: String) {
         tryOrLog {
             val savedLocalization = localizationRepository.get()
-            val needLocalizationFetch = savedLocalization == null || savedLocalization.localizationUrl != localizationUrl
+            val needLocalizationFetch =
+                savedLocalization == null || savedLocalization.localizationUrl != localizationUrl
             if (needLocalizationFetch) {
                 val localizationResponse = Fuel.get(localizationUrl).awaitString()
                 val localizations: Map<String, String> =
@@ -471,6 +534,10 @@ internal class VolvoxHubService {
         preferencesRepository.setTermsOfServiceUrl(config.eula)
     }
 
+    private fun saveGoogleClientId(googleClientId: String) {
+        preferencesRepository.saveGoogleClientId(googleClientId)
+    }
+
     /**
      * Save Volvox Hub Id to the shared preferences
      */
@@ -492,9 +559,21 @@ internal class VolvoxHubService {
     /**
      * Initialize the Amplitude SDK
      */
-    private fun initAmplitudeSdk(apiKey: String, experimentKey: String = StringUtils.EMPTY) {
+    private fun initAmplitudeSdk(
+        apiKey: String,
+        experimentKey: String = StringUtils.EMPTY,
+        userEmail: String,
+        userName: String
+    ) {
         tryOrLog {
-            AmplitudeManager.initialize(configuration.context, apiKey = apiKey, experimentKey = experimentKey, appName = configuration.appName)
+            AmplitudeManager.initialize(
+                configuration.context,
+                apiKey = apiKey,
+                experimentKey = experimentKey,
+                appName = configuration.appName,
+                userEmail = userEmail,
+                userName = userName
+            )
         }
     }
 
@@ -537,7 +616,8 @@ internal class VolvoxHubService {
             mapOf(
                 "PushToken" to (OneSignal.getDeviceState()?.pushToken.orEmpty()),
                 "OneSignalPlayerId" to (OneSignal.getDeviceState()?.userId.orEmpty()),
-                "AdvertisingId" to AppsFlyerLib.getInstance().getAppsFlyerUID(configuration.context).orEmpty(),
+                "AdvertisingId" to AppsFlyerLib.getInstance().getAppsFlyerUID(configuration.context)
+                    .orEmpty(),
             )
 
         val hasChanges =
@@ -578,7 +658,7 @@ internal class VolvoxHubService {
      */
     fun claimReward(onComplete: (ClaimRewardResponse) -> Unit, onError: (String) -> Unit) {
         scope.launch {
-            when(val result = hubApiRepository.claimReward()) {
+            when (val result = hubApiRepository.claimReward()) {
                 is Ok -> onComplete(result.value)
                 is Err -> onError(result.error.message.orEmpty())
             }
@@ -609,14 +689,147 @@ internal class VolvoxHubService {
      * Calls `successCallback` on success with `PromoCodeResponse`,
      * otherwise calls `errorCallback`.
      */
-    fun usePromoCode(code: String, errorCallback: () -> Unit, successCallback: (PromoCodeResponse) -> Unit) {
+    fun usePromoCode(
+        code: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (PromoCodeResponse) -> Unit
+    ) {
         scope.launch {
             val promoCodeRequest = PromoCodeRequest(code)
-            hubApiRepository.usePromoCode(promoCodeRequest).get()?.let {
-                successCallback.invoke(it)
-            } ?: run {
-                errorCallback.invoke()
+            when (val result = hubApiRepository.usePromoCode(promoCodeRequest)) {
+                is Ok -> successCallback.invoke(result.value)
+                is Err -> errorCallback.invoke(result.error.message)
             }
         }
     }
+
+    fun getTickets(
+        errorCallback: (String?) -> Unit,
+        successCallback: (SupportTicketsResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.getTickets()) {
+                is Ok -> successCallback(result.value)
+                is Err -> {
+                    errorCallback.invoke(result.error.message)
+                    Log.d("error message", result.error.message.toString())
+                }
+            }
+        }
+    }
+
+    fun getTicket(
+        ticketId: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (SupportTicketResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.getTicket(ticketId)) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun createNewMessage(
+        ticketId: String,
+        message: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: () -> Unit
+    ) {
+        scope.launch {
+            val messageNewTicketRequest = MessageTicketRequest(message)
+            when (val result =
+                hubApiRepository.createNewMessage(ticketId, messageNewTicketRequest)) {
+                is Ok -> successCallback()
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun createNewTicket(
+        category: String,
+        message: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (CreateNewTicketResponse) -> Unit
+    ) {
+        scope.launch {
+            val newTicketRequest = NewTicketRequest(category, message)
+            when (val result = hubApiRepository.createNewTicket(newTicketRequest)) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun getUnseenStatus(
+        errorCallback: (String?) -> Unit,
+        successCallback: (UnseenStatusResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.getUnseenStatus()) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun socialLogin(
+        socialLoginRequest: SocialLoginRequest,
+        errorCallback: (String?) -> Unit,
+        successCallback: (RegisterBaseResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.socialLogin(socialLoginRequest)) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun deleteAccount(
+        errorCallback: (String?) -> Unit,
+        successCallback: (DeleteAccountResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.deleteAccount()) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun getProducts(
+        errorCallback: (String?) -> Unit,
+        successCallback: (GetProductsResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.getProducts()) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun getNotificationPermissionState(): Boolean =
+        preferencesRepository.getNotificationPermissionState()
+
+    fun saveNotificationPermissionState(permissionState: Boolean) {
+        preferencesRepository.saveNotificationPermissionState(permissionState)
+    }
+
+    fun approveQrLogin(
+        token: String,
+        errorCallback: (String?) -> Unit,
+        successCallback: (QrLoginResponse) -> Unit
+    ) {
+        scope.launch {
+            when (val result = hubApiRepository.approveQrLogin(QrLoginRequest(token))) {
+                is Ok -> successCallback(result.value)
+                is Err -> errorCallback(result.error.message)
+            }
+        }
+    }
+
+    fun getGoogleClientId(): String = preferencesRepository.getGoogleClientId()
 }

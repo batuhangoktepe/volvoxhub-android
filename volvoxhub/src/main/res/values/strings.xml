@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Volvox Hub</string>
+    <string name="log_in_with_google">Log in with Google</string>
+    <string name="contact_us">Contact us</string>
+    <string name="write_your_message_here">Write your message here</string>
+    <string name="technical_issues">Technical Issues</string>
+    <string name="billing_issues">Billing Issues</string>
+    <string name="account_issues">Account Issues</string>
+    <string name="app_usage">App Usage</string>
+    <string name="feature_request">Feature Request</string>
+    <string name="other">Other</string>
+    <string name="create_new_ticket">Create New Ticket</string>
+    <string name="you_dont_have_any_support_ticket">You don\'t have any support ticket</string>
+    <string name="how_can_ı_help_you">How can I help you?</string>
 </resources>
