@@ -53,6 +53,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import android.content.Context
+import androidx.compose.foundation.layout.systemBarsPadding
 
 @Composable
 fun Contacts(
@@ -61,7 +62,8 @@ fun Contacts(
     navigateToDetail: (ticketId: String?, category: String) -> Unit,
     navigateBack: () -> Unit,
     fonts: HubFonts,
-    isTitleCentered: Boolean
+    isTitleCentered: Boolean,
+    setSystemBarsPadding: Boolean
 ) {
     val tickets by viewModel.contactsUiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -85,6 +87,7 @@ fun Contacts(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .then(if (setSystemBarsPadding) Modifier.systemBarsPadding() else Modifier)
             .background(VolvoxHubTheme.colors.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

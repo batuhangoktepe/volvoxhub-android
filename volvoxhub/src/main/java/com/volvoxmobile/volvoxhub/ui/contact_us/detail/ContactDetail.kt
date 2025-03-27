@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,7 +34,8 @@ fun ContactDetail(
     ticketId: String?,
     category: String,
     isTitleCentered: Boolean,
-    isDarkTheme:Boolean
+    isDarkTheme: Boolean,
+    setSystemBarsPadding: Boolean
 ) {
     val uiState by viewModel.contactsDetailUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -68,7 +70,9 @@ fun ContactDetail(
                 isDarkTheme = isDarkTheme
             )
         },
-        modifier = Modifier.background(VolvoxHubTheme.colors.background)
+        modifier = Modifier
+            .then(if (setSystemBarsPadding) Modifier.systemBarsPadding() else Modifier)
+            .background(VolvoxHubTheme.colors.background)
     ) { paddingValues ->
         when (uiState.screenState) {
             is ContactDetailScreenUiState.Error -> {

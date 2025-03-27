@@ -28,7 +28,8 @@ fun NavGraphBuilder.contactDetailScreen(
     lightColors: VolvoxHubColors,
     hubResources: HubResources,
     isTitleCentered: Boolean,
-    darkTheme: Boolean
+    darkTheme: Boolean,
+    setSystemBarsPadding: Boolean
 ) {
     composable<ContactDetailRoute>(
         enterTransition = {
@@ -69,7 +70,8 @@ fun NavGraphBuilder.contactDetailScreen(
                 ticketId = arguments.ticketId,
                 category = arguments.category,
                 isTitleCentered = isTitleCentered,
-                isDarkTheme = darkTheme
+                isDarkTheme = darkTheme,
+                setSystemBarsPadding = setSystemBarsPadding
             )
         }
     }
