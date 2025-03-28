@@ -30,7 +30,8 @@
             android:name="com.hub.example.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Hub">
+            android:theme="@style/Theme.Hub"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <activity

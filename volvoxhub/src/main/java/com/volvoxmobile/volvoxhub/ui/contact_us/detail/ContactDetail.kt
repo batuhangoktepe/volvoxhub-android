@@ -2,9 +2,14 @@ package com.volvoxmobile.volvoxhub.ui.contact_us.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.imeNestedScroll
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -24,6 +29,7 @@ import com.volvoxmobile.volvoxhub.ui.contact_us.HubResources
 import com.volvoxmobile.volvoxhub.ui.contact_us.contacts.ScreenUiState
 import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ContactDetail(
     modifier: Modifier = Modifier,
@@ -73,6 +79,7 @@ fun ContactDetail(
         modifier = Modifier
             .then(if (setSystemBarsPadding) Modifier.systemBarsPadding() else Modifier)
             .background(VolvoxHubTheme.colors.background)
+            .imePadding()
     ) { paddingValues ->
         when (uiState.screenState) {
             is ContactDetailScreenUiState.Error -> {
@@ -94,7 +101,9 @@ fun ContactDetail(
 
             is ContactDetailScreenUiState.Success -> {
                 ContactMessages(
-                    Modifier.padding(paddingValues),
+                    Modifier
+                        .padding(paddingValues)
+                        .imeNestedScroll(),
                     messageList = uiState.messageList,
                     fonts = fonts
                 )

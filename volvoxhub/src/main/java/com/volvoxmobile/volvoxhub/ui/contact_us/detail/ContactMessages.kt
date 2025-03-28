@@ -10,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,6 +24,8 @@ import com.volvoxmobile.volvoxhub.ui.contact_us.HubFonts
 import com.volvoxmobile.volvoxhub.ui.contact_us.detail.component.ContactMessage
 import com.volvoxmobile.volvoxhub.ui.contact_us.detail.component.UserMessage
 import com.volvoxmobile.volvoxhub.ui.theme.VolvoxHubTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ContactMessages(
@@ -31,6 +35,17 @@ fun ContactMessages(
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    
+    LaunchedEffect(messageList.size) {
+        if (messageList.isNotEmpty()) {
+            coroutineScope.launch {
+                delay(100)
+                scrollState.animateScrollTo(scrollState.maxValue)
+            }
+        }
+    }
+    
     if (messageList.isEmpty()) {
         Column(
             modifier = modifier
