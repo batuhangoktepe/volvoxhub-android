@@ -55,7 +55,8 @@ fun ContactMessageBar(
     var isOverflowing by remember { mutableStateOf(false) }
     val disabledSendButtonRes = if (isDarkTheme) hubResources.disabledSendButton else hubResources.lightDisabledSendButton
     Column(
-        Modifier.background(VolvoxHubTheme.colors.background)
+        Modifier
+            .background(VolvoxHubTheme.colors.background)
     ) {
         if (isTyping) {
             Text(

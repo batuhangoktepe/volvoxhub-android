@@ -23,6 +23,7 @@
             android:name=".DummyActivity"
             android:theme="@style/Theme.Transparent"
             android:excludeFromRecents="true"
+            android:windowSoftInputMode="adjustResize"
             android:noHistory="true"/>
 
     </application>
