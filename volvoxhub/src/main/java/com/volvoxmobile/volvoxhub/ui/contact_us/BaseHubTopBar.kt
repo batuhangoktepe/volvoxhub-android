@@ -71,7 +71,6 @@ fun BaseHubTopBar(
                     val titleModifier = if (isTitleCentered) {
                         Modifier
                             .fillMaxWidth()
-                            .padding(start = 10.dp)
                     } else {
                         Modifier.padding(start = 10.dp)
                     }
