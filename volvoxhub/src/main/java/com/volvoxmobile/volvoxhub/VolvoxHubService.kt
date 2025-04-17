@@ -19,6 +19,7 @@ import com.github.michaelbull.result.get
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.onesignal.OneSignal
@@ -236,12 +237,13 @@ internal class VolvoxHubService {
             }
         }
 
-        return InstalledAppsRequest(
+        val installedApps = InstalledAppsRequest(
             instagram = isAppInstalled("com.instagram.android"),
             facebook = isAppInstalled("com.facebook.katana"),
             tiktok = isAppInstalled("com.zhiliaoapp.musically"),
             snapchat = isAppInstalled("com.snapchat.android")
         )
+        return installedApps
     }
 
 
@@ -444,11 +446,15 @@ internal class VolvoxHubService {
                         val jsonObject = JsonObject()
                         // Iterate through all conversion data and add to JsonObject
                         data.forEach { (key, value) ->
-                            when (value) {
-                                is String -> jsonObject.addProperty(key, value)
-                                is Number -> jsonObject.addProperty(key, value)
-                                is Boolean -> jsonObject.addProperty(key, value)
-                                else -> jsonObject.addProperty(key, value.toString())
+                            if (value == null) {
+                                jsonObject.add(key, JsonNull.INSTANCE)
+                            } else {
+                                when (value) {
+                                    is String -> jsonObject.addProperty(key, value)
+                                    is Number -> jsonObject.addProperty(key, value)
+                                    is Boolean -> jsonObject.addProperty(key, value)
+                                    else -> jsonObject.addProperty(key, value.toString())
+                                }
                             }
                         }
                         // Send conversion data to backend
