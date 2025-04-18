@@ -99,7 +99,7 @@ fun ContactMessageBar(
                     shape = RoundedCornerShape(40.dp),
                     placeholder = {
                         AutoResizedText(
-                            text = Localizations.get(
+                            text = Localizations.getHub(
                                 LocalContext.current,
                                 "write_your_message_here"
                             ),

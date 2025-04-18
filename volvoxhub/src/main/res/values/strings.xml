@@ -13,4 +13,5 @@
     <string name="create_new_ticket">Create New Ticket</string>
     <string name="you_dont_have_any_support_ticket">You don\'t have any support ticket</string>
     <string name="how_can_ı_help_you">How can I help you?</string>
+    <string name="no_active_subscription_found">No active subscriptions found</string>
 </resources>

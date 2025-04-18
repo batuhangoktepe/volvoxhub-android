@@ -60,7 +60,7 @@ fun ContactMessages(
             )
             Text(
                 modifier = Modifier.offset(y = (-24).dp),
-                text = Localizations.get(context,"how_can_ı_help_you"),
+                text = Localizations.getHub(context,"how_can_ı_help_you"),
                 fontSize = 16.sp,
                 fontFamily = fonts.semiBold,
                 color = VolvoxHubTheme.colors.contactDetailHelpTextColor
