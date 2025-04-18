@@ -58,7 +58,7 @@ fun ContactDetail(
         topBar = {
             BaseHubTopBar(
                 modifier = modifier,
-                title = Localizations.get(context, "contact_us"),
+                title = Localizations.getHub(context, "contact_us"),
                 isTitleCentered = isTitleCentered,
                 titleFontFamily = fonts.topBar,
                 onNavigateBackClick = navigateBack

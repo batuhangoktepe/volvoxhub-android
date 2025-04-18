@@ -12,6 +12,7 @@ import com.revenuecat.purchases.interfaces.*
 import com.revenuecat.purchases.models.StoreProduct
 import com.revenuecat.purchases.models.StoreTransaction
 import com.volvoxmobile.volvoxhub.VolvoxHubLogManager
+import com.volvoxmobile.volvoxhub.common.util.Localizations
 import com.volvoxmobile.volvoxhub.common.util.VolvoxHubLogLevel
 
 internal class RcBillingHelper : UpdatedCustomerInfoListener {
@@ -106,6 +107,7 @@ internal class RcBillingHelper : UpdatedCustomerInfoListener {
     }
 
     fun restorePurchase(
+        context: Context,
         errorCallback: (PurchasesError) -> Unit,
         successCallback: () -> Unit,
     ) {
@@ -122,7 +124,7 @@ internal class RcBillingHelper : UpdatedCustomerInfoListener {
                         errorCallback.invoke(
                             PurchasesError(
                                 PurchasesErrorCode.UnknownError,
-                                "No active subscriptions found",
+                                Localizations.getHub(context,"no_active_subscription_found"),
                             ),
                         )
                     }

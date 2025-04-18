@@ -49,7 +49,7 @@ fun GoogleSignInButton(
             contentDescription = "Google Icon"
         )
         Text(
-            text = Localizations.get(context, "log_in_with_google"),
+            text = Localizations.getHub(context, "log_in_with_google"),
             fontSize = 16.sp,
             color = Color.Black
         )

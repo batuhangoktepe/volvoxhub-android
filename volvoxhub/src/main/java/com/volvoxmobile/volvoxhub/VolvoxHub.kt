@@ -129,7 +129,7 @@ class VolvoxHub private constructor(
             val privacyPolicyUrl = VolvoxHubService.instance.getPrivacyPolicyUrl()
             WebScreen(
                 url = privacyPolicyUrl,
-                title = Localizations.get(context, "Privacy Policy"),
+                title = Localizations.getHub(context, "Privacy Policy"),
                 onClose = onClose,
                 backgroundColor = backgroundColor,
                 contentColor = contentColor
@@ -146,7 +146,7 @@ class VolvoxHub private constructor(
             val termsOfServiceUrl = VolvoxHubService.instance.getTermsOfServiceUrl()
             WebScreen(
                 url = termsOfServiceUrl,
-                title = Localizations.get(context, "Terms of Service"),
+                title = Localizations.getHub(context, "Terms of Service"),
                 onClose = onClose,
                 backgroundColor = backgroundColor,
                 contentColor = contentColor
@@ -256,10 +256,11 @@ class VolvoxHub private constructor(
      * Restore the purchase for the user
      */
     fun restorePurchase(
+        context: Context,
         errorCallback: (PurchasesError) -> Unit,
         successCallback: () -> Unit,
     ) {
-        rcBillingHelper.restorePurchase(errorCallback, successCallback)
+        rcBillingHelper.restorePurchase(context, errorCallback, successCallback)
     }
 
     /**

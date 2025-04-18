@@ -47,7 +47,7 @@ fun SplashScreen(splashViewModel: SplashViewModel) {
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Greeting(
-            name = Localizations.get(context = LocalContext.current, "Android"),
+            name = Localizations.getHub(context = LocalContext.current, "Android"),
             modifier = Modifier.padding(innerPadding),
         )
 

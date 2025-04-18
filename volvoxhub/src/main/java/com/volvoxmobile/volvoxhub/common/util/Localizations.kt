@@ -25,6 +25,20 @@ object Localizations {
             }
         }
 
+    fun getHub(
+        context: Context,
+        key: String,
+    ): String =
+        if (localizationsMap.containsKey(key)) {
+            localizationsMap[key].orEmpty().trim()
+        } else {
+            try {
+                context.getString(context.resIdByName(key, "string")).trim()
+            } catch (e: Exception) {
+                key
+            }
+        }
+
     fun getOrEmpty(key: String): String = tryOrNull { localizationsMap[key] } ?: StringUtils.EMPTY
 
     fun getOrKey(key: String): String = tryOrNull { localizationsMap[key] } ?: key

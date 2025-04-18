@@ -53,6 +53,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.systemBarsPadding
 
 @Composable
@@ -92,7 +93,7 @@ fun Contacts(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BaseHubTopBar(
-            title = Localizations.get(context,"contact_us"),
+            title = Localizations.getHub(context,"contact_us"),
             titleFontFamily = fonts.semiBold,
             isTitleCentered = isTitleCentered,
             onNavigateBackClick = navigateBack,
@@ -147,7 +148,7 @@ fun Contacts(
                                 tint = VolvoxHubTheme.colors.editPenTint
                             )
                             Text(
-                                text = Localizations.get(context,"you_dont_have_any_support_ticket"),
+                                text = Localizations.getHub(context,"you_dont_have_any_support_ticket"),
                                 color = VolvoxHubTheme.colors.textColor,
                                 fontFamily = fonts.regular,
                                 fontSize = 14.sp
@@ -169,7 +170,7 @@ fun Contacts(
                             contentPadding = PaddingValues(vertical = 14.dp)
                         ) {
                             Text(
-                                text = Localizations.get(context,"create_new_ticket"),
+                                text = Localizations.getHub(context,"create_new_ticket"),
                                 fontFamily = fonts.bold,
                                 fontSize = 14.sp
                             )
@@ -215,7 +216,7 @@ fun Contacts(
                     ) {
                         TICKETCATEGORIES.entries.forEachIndexed { index, category ->
                             Text(
-                                text = Localizations.get(context, category.title),
+                                text = Localizations.getHub(context, category.title),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 12.dp)

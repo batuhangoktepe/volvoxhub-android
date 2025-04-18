@@ -72,7 +72,7 @@ fun ContactItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = Localizations.get(context, TICKETCATEGORIES.valueOf(contactTitle).title),
+                    text = Localizations.getHub(context, TICKETCATEGORIES.valueOf(contactTitle).title),
                     fontSize = 14.sp,
                     fontFamily = titleFamily,
                     color = VolvoxHubTheme.colors.textColor
